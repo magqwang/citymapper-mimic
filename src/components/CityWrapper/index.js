@@ -1,5 +1,6 @@
 // import { useCallback, useState } from "react";
 // import { GoogleMap, useJsApiLoader, Marker } from "@react-google-maps/api";
+import { Typography } from "@mui/material";
 import Direction from "../Direction";
 // import Map from "../Map";
 
@@ -8,7 +9,7 @@ import Direction from "../Direction";
 //   lng: 144.9630576,
 // };
 
-const Home = () => {
+const CityWrapper = () => {
   //   const [map, setMap] = useState(/**@type google.maps.Map */ (null));
 
   //   const { isLoaded } = useJsApiLoader({
@@ -27,6 +28,13 @@ const Home = () => {
 
   return (
     <>
+      <Typography
+        variant="h2"
+        component="h1"
+        sx={{ color: "white", backgroundColor: "rgb(46, 145, 39)" }}
+      >
+        Melbourne
+      </Typography>
       <Direction />
       {/* <Map
         onLoad={onLoad}
@@ -38,4 +46,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default CityWrapper;
