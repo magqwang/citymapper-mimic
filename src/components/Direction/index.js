@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import {
   GoogleMap,
   useJsApiLoader,
@@ -6,22 +6,21 @@ import {
   Autocomplete,
   DirectionsRenderer,
 } from "@react-google-maps/api";
+import { Box, Button, ButtonGroup, Stack, Typography } from "@mui/material";
 import {
-  Box,
-  Button,
-  Grid,
-  IconButton,
-  TextField,
-  Typography,
-} from "@mui/material";
-import NearMeIcon from "@mui/icons-material/NearMe";
-import ClearIcon from "@mui/icons-material/Clear";
+  NearMe,
+  Clear,
+  DirectionsCar,
+  DirectionsWalk,
+  DirectionsBike,
+  DirectionsTransit,
+} from "@mui/icons-material";
 import "./index.css";
 
 const containerStyle = {
   width: "100%",
   height: "500px",
-  margin: "0 auto",
+  borderRadius: "10px",
 };
 
 const center = {
@@ -29,13 +28,33 @@ const center = {
   lng: 144.9630576,
 };
 
-const libraries = ["places"];
+const noPoi = [
+  {
+    featureType: "poi",
+    stylers: [{ visibility: "off" }],
+  },
+  {
+    featureType: "poi.park",
+    stylers: [{ visibility: "on" }],
+  },
+];
 
 const Direction = () => {
   const [map, setMap] = useState(null);
-  const [directionsResponse, setDirectionsResponse] = useState(null);
-  const [distance, setDistance] = useState("");
-  const [duration, setDuration] = useState("");
+  const [driveDirections, setDriveDirections] = useState(null);
+  const [driveDistance, setDriveDistance] = useState("");
+  const [driveDuration, setDriveDuration] = useState("");
+  const [walkDirections, setWalkDirections] = useState(null);
+  const [walkDistance, setWalkDistance] = useState("");
+  const [walkDuration, setWalkDuration] = useState("");
+  const [bicycleDirections, setBicycleDirections] = useState(null);
+  const [bicycleDistance, setBicycleDistance] = useState("");
+  const [bicycleDuration, setBicycleDuration] = useState("");
+  const [transitDirections, setTransitDirections] = useState(null);
+  const [transitDistance, setTransitDistance] = useState("");
+  const [transitDuration, setTransitDuration] = useState("");
+  // To remove a warning
+  const [libraries] = useState(["places"]);
 
   /** @type React.mutableRefObject<HTMLInputElement> */
   const originRef = useRef();
@@ -43,9 +62,21 @@ const Direction = () => {
   const destinationRef = useRef();
 
   const { isLoaded } = useJsApiLoader({
+    id: "google-map-script",
     googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
-    libraries,
+    libraries: libraries,
   });
+
+  const onLoad = useCallback((map) => {
+    // eslint-disable-next-line no-undef
+    const bounds = new google.maps.LatLngBounds(center);
+    map.fitBounds(bounds);
+    setMap(map);
+  }, []);
+
+  const onUnmount = useCallback(() => {
+    setMap(null);
+  }, []);
 
   if (!isLoaded) return <p>Loading...</p>;
 
@@ -59,127 +90,254 @@ const Direction = () => {
     // eslint-disable-next-line no-undef
     const directionService = new google.maps.DirectionsService();
 
-    const results = await directionService.route({
+    const driveResults = await directionService.route({
       origin: originRef.current.value,
       destination: destinationRef.current.value,
       // eslint-disable-next-line no-undef
       travelMode: google.maps.TravelMode.DRIVING,
     });
 
-    console.log(results);
-    setDirectionsResponse(results);
-    setDistance(results.routes[0].legs[0].distance.text);
-    setDuration(results.routes[0].legs[0].duration.text);
+    // console.log(driveResults);
+    setDriveDirections(driveResults);
+    setDriveDistance(driveResults.routes[0].legs[0].distance.text);
+    setDriveDuration(driveResults.routes[0].legs[0].duration.text);
+
+    const walkResults = await directionService.route({
+      origin: originRef.current.value,
+      destination: destinationRef.current.value,
+      // eslint-disable-next-line no-undef
+      travelMode: google.maps.TravelMode.WALKING,
+    });
+
+    // console.log(walkResults);
+    setWalkDirections(walkResults);
+    setWalkDistance(walkResults.routes[0].legs[0].distance.text);
+    setWalkDuration(walkResults.routes[0].legs[0].duration.text);
+
+    const bicycleResults = await directionService.route({
+      origin: originRef.current.value,
+      destination: destinationRef.current.value,
+      // eslint-disable-next-line no-undef
+      travelMode: google.maps.TravelMode.BICYCLING,
+    });
+
+    // console.log(bicycleResults);
+    setBicycleDirections(bicycleResults);
+    setBicycleDistance(bicycleResults.routes[0].legs[0].distance.text);
+    setBicycleDuration(bicycleResults.routes[0].legs[0].duration.text);
+
+    const transitResults = await directionService.route({
+      origin: originRef.current.value,
+      destination: destinationRef.current.value,
+      // eslint-disable-next-line no-undef
+      travelMode: google.maps.TravelMode.TRANSIT,
+      provideRouteAlternatives: true,
+    });
+
+    console.log(transitResults);
+    setTransitDirections(transitResults);
+    setTransitDistance(transitResults.routes[0].legs[0].distance.text);
+    setTransitDuration(transitResults.routes[0].legs[0].duration.text);
   };
 
   const clearRoute = () => {
-    setDirectionsResponse(null);
-    setDistance("");
-    setDuration("");
+    setDriveDirections(null);
+    setDriveDistance("");
+    setDriveDuration("");
+    setWalkDirections(null);
+    setWalkDistance("");
+    setWalkDuration("");
+    setBicycleDirections(null);
+    setBicycleDistance("");
+    setBicycleDuration("");
+    setTransitDirections(null);
+    setTransitDistance("");
+    setTransitDuration("");
     originRef.current.value = "";
     destinationRef.current.value = "";
   };
 
+  const centerMap = () => {
+    map.panTo(center);
+  };
+
   return (
-    <>
-      <Box className="direction">
-        <Grid container rowSpacing={1} columnSpacing={1}>
-          <Grid item xs={4}>
-            <Autocomplete>
-              <input type="text" placeholder="origin" ref={originRef} />
-              {/* <TextField
-                id="outlined-basic"
-                label="Origin"
-                variant="outlined"
-                size="small"
-              /> */}
-            </Autocomplete>
-          </Grid>
-          <Grid item xs={4}>
-            <Autocomplete>
-              <input
-                type="text"
-                placeholder="destination"
-                ref={destinationRef}
-              />
-              {/* <TextField
-                id="outlined-basic"
-                label="Destination"
-                variant="outlined"
-                size="small"
-              /> */}
-            </Autocomplete>
-          </Grid>
-          <Grid item xs={3}>
+    <div className="wrapper">
+      <div className="direction">
+        <Stack
+          spacing={2}
+          sx={{
+            width: "100%",
+            backgroundColor: "white",
+            padding: "20px",
+            borderRadius: "10px",
+          }}
+        >
+          <Autocomplete>
+            <input type="text" placeholder="Start" ref={originRef} />
+          </Autocomplete>
+          <Autocomplete>
+            <input type="text" placeholder="End" ref={destinationRef} />
+          </Autocomplete>
+          <ButtonGroup>
             <Button
               variant="contained"
               color="primary"
-              size="medium"
               onClick={calculateRoute}
             >
               Calculate Route
             </Button>
-          </Grid>
-          <Grid item xs={1}>
-            <IconButton color="primary" aria-label="clear" onClick={clearRoute}>
-              <ClearIcon />
-            </IconButton>
-          </Grid>
-          <Grid item xs={5}>
-            <Typography variant="h5" component="p">
-              Distance: {distance}
-            </Typography>
-          </Grid>
-          <Grid item xs={5}>
-            <Typography variant="h5" component="p">
-              Duration: {duration}
-            </Typography>
-          </Grid>
-          <Grid item xs={2}>
-            <IconButton
+            <Button
+              variant="contained"
+              color="primary"
+              aria-label="clear"
+              endIcon={<Clear />}
+              onClick={clearRoute}
+            >
+              Clear
+            </Button>
+            <Button
+              variant="contained"
               color="primary"
               aria-label="center back"
-              onClick={() => map.panTo(center)}
+              endIcon={<NearMe />}
+              onClick={centerMap}
             >
-              <NearMeIcon />
-            </IconButton>
-          </Grid>
-        </Grid>
-      </Box>
-      {isLoaded ? (
-        <GoogleMap
-          mapContainerStyle={containerStyle}
-          center={center}
-          zoom={10}
-          onLoad={() => setMap(map)}
-          onUnmount={() => setMap(null)}
-          options={{
-            // zoomControl: false,
-            streetViewControl: false,
-            mapTypeControl: false,
-            fullscreenControl: false,
-          }}
-        >
-          <Marker position={center} />
-          {directionsResponse && (
-            <DirectionsRenderer directions={directionsResponse} />
-          )}
-        </GoogleMap>
-      ) : (
-        <p>Loading...</p>
-      )}
-    </>
+              Home
+            </Button>
+          </ButtonGroup>
+        </Stack>
+        {(driveDirections || walkDirections || bicycleDirections) && (
+          <ButtonGroup
+            variant="outlined"
+            sx={{
+              marginTop: "20px",
+              backgroundColor: "white",
+              "&:hover": {
+                backgroundColor: "#f3f3f3",
+              },
+            }}
+          >
+            {driveDirections && (
+              <Button
+                startIcon={<DirectionsCar sx={{ color: "grey.500" }} />}
+                sx={{
+                  flexDirection: "column",
+                  width: "33.33%",
+                }}
+              >
+                <Typography variant="body-1" component="p" fontWeight={"bold"}>
+                  {driveDistance}
+                </Typography>
+                <Typography variant="body-1" component="p" fontWeight={"bold"}>
+                  {driveDuration}
+                </Typography>
+              </Button>
+            )}
+            {walkDirections && (
+              <Button
+                sx={{
+                  flexDirection: "column",
+                  width: "33.33%",
+                }}
+              >
+                <DirectionsWalk sx={{ color: "grey.500" }} />
+                <Typography variant="body-1" component="p" fontWeight={"bold"}>
+                  {walkDistance}
+                </Typography>
+                <Typography variant="body-1" component="p" fontWeight={"bold"}>
+                  {walkDuration}
+                </Typography>
+              </Button>
+            )}
+            {bicycleDirections && (
+              <Button
+                sx={{
+                  flexDirection: "column",
+                  width: "33.33%",
+                }}
+              >
+                <DirectionsBike sx={{ color: "grey.500" }} />
+                <Typography variant="body-1" component="p" fontWeight={"bold"}>
+                  {bicycleDistance}
+                </Typography>
+                <Typography variant="body-1" component="p" fontWeight={"bold"}>
+                  {bicycleDuration}
+                </Typography>
+              </Button>
+            )}
+          </ButtonGroup>
+        )}
+        {transitDirections && (
+          <Button
+            variant="outlined"
+            sx={{
+              marginTop: "20px",
+              backgroundColor: "white",
+              borderRadius: "10px",
+              "&:hover": {
+                backgroundColor: "#f3f3f3",
+              },
+            }}
+          >
+            <DirectionsTransit sx={{ color: "grey.500" }} />
+            <Typography variant="body-1" component="p" fontWeight={"bold"}>
+              {transitDistance}
+            </Typography>
+            <Typography variant="body-1" component="p" fontWeight={"bold"}>
+              {transitDuration}
+            </Typography>
+          </Button>
+        )}
+      </div>
+      <div className="map">
+        {isLoaded ? (
+          <GoogleMap
+            mapContainerStyle={containerStyle}
+            center={center}
+            zoom={10}
+            onLoad={onLoad}
+            onUnmount={onUnmount}
+            options={{
+              // zoomControl: false,
+              streetViewControl: false,
+              mapTypeControl: false,
+              fullscreenControl: false,
+              styles: noPoi,
+            }}
+          >
+            <Marker position={center} />
+            {/* {driveDirections && (
+              <DirectionsRenderer
+                directions={driveDirections}
+                options={{ polylineOptions: { strokeColor: "black" } }}
+              />
+            )}
+            {walkDirections && (
+              <DirectionsRenderer
+                directions={walkDirections}
+                options={{ polylineOptions: { strokeColor: "gray" } }}
+              />
+            )}
+            {bicycleDirections && (
+              <DirectionsRenderer
+                directions={bicycleDirections}
+                options={{ polylineOptions: { strokeColor: "green" } }}
+              />
+            )} */}
+            {transitDirections && (
+              <DirectionsRenderer
+                directions={transitDirections}
+                options={{ polylineOptions: { strokeColor: "orange" } }}
+              />
+            )}
+          </GoogleMap>
+        ) : (
+          <p>Loading...</p>
+        )}
+      </div>
+    </div>
   );
 };
 
 export default Direction;
-
-// const onLoad = useCallback((map) => {
-//   const bounds = new window.google.maps.LatLngBounds(center);
-//   map.fitBounds(bounds);
-//   setMap(map);
-// }, []);
-
-// const onUnmount = useCallback(() => {
-//   setMap(null);
-// }, []);

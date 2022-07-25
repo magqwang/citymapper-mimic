@@ -1,14 +1,23 @@
+.wrapper {
+  display: flex;
+  background-color: rgb(55, 171, 46);
+}
+
 .direction {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 50%;
-  margin: 20px auto;
+  flex-direction: column;
+  margin: 20px;
+  width: 40%;
 }
 
 .direction input {
   width: 100%;
   padding: 10px;
-  border: 1px solid blue;
+  border: 1px solid lightgray;
   border-radius: 5px;
+}
+
+.map {
+  width: 60%;
+  margin: 20px;
 }
