@@ -1,0 +1,14 @@
+.direction {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50%;
+  margin: 20px auto;
+}
+
+.direction input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid blue;
+  border-radius: 5px;
+}
