@@ -1,7 +1,7 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { CssBaseline } from "@mui/material";
-import CityWrapper from "../CityWrapper";
-import DirectionResults from "../DirectionResults";
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { CssBaseline } from '@mui/material'
+import CityWrapper from '../CityWrapper'
+import DirectionResults from '../DirectionResults'
 
 function App() {
   return (
@@ -9,11 +9,12 @@ function App() {
       <CssBaseline />
       <Routes>
         <Route path="/" element={<CityWrapper />}>
-          <Route path="/search/:addresses" element={<DirectionResults />} />
+          <Route path="/directions/:addresses" element={<DirectionResults />} />
         </Route>
+        {/* <Route path="/directions/:details" element={<DirectionDetails />} /> */}
       </Routes>
     </BrowserRouter>
-  );
+  )
 }
 
-export default App;
+export default App

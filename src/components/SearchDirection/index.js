@@ -1,55 +1,56 @@
-import { useRef, useState } from "react";
-import { Autocomplete } from "@react-google-maps/api";
-import { Button, ButtonGroup, Stack } from "@mui/material";
-import { Radio, RadioGroup, Sheet, radioClasses } from "@mui/joy";
+import { useRef, useState } from 'react'
+import { Autocomplete } from '@react-google-maps/api'
+import { Button, ButtonGroup, Stack } from '@mui/material'
+import { Radio, RadioGroup, Sheet, radioClasses } from '@mui/joy'
 import {
   Clear,
   DirectionsCar,
   DirectionsWalk,
   DirectionsBike,
   DirectionsTransit,
-} from "@mui/icons-material";
-import { grey } from "@mui/material/colors";
-import DirectionResults from "../DirectionResults";
-import "./index.css";
+} from '@mui/icons-material'
+import { grey } from '@mui/material/colors'
+import DirectionResults from '../DirectionResults'
+import './index.css'
+import { useNavigate } from 'react-router-dom'
 
 const travelModeList = [
   {
-    value: "DRIVING",
+    value: 'DRIVING',
     label: <DirectionsCar />,
   },
   {
-    value: "WALKING",
+    value: 'WALKING',
     label: <DirectionsWalk />,
   },
   {
-    value: "BICYCLING",
+    value: 'BICYCLING',
     label: <DirectionsBike />,
   },
   {
-    value: "TRANSIT",
+    value: 'TRANSIT',
     label: <DirectionsTransit />,
   },
-];
+]
 
 const SearchDirection = ({ directions, setDirections }) => {
-  const [travelMode, setTravelMode] = useState("DRIVING");
-  const [travelIcon, setTravelIcon] = useState(<DirectionsCar />);
+  const [travelMode, setTravelMode] = useState('DRIVING')
+  const [travelIcon, setTravelIcon] = useState(<DirectionsCar />)
 
   /** @type React.mutableRefObject<HTMLInputElement> */
-  const originRef = useRef();
+  const originRef = useRef()
   /** @type React.mutableRefObject<HTMLInputElement> */
-  const destinationRef = useRef();
+  const destinationRef = useRef()
+
+  let navigate = useNavigate()
 
   const calculateRoute = async () => {
-    console.log(originRef.current.value);
-    console.log(destinationRef.current.value);
-    if (originRef.current.value === "" || destinationRef.current.value === "") {
-      return;
+    if (originRef.current.value === '' || destinationRef.current.value === '') {
+      return
     }
 
     // eslint-disable-next-line no-undef
-    const directionService = new google.maps.DirectionsService();
+    const directionService = new google.maps.DirectionsService()
 
     const Results = await directionService.route({
       origin: originRef.current.value,
@@ -57,35 +58,38 @@ const SearchDirection = ({ directions, setDirections }) => {
       // eslint-disable-next-line no-undef
       travelMode: google.maps.TravelMode[travelMode],
       provideRouteAlternatives: true,
-    });
+    })
 
-    console.log(Results);
-    setDirections(Results);
-  };
+    console.log(Results)
+    setDirections(Results)
+    navigate(
+      `/directions/origin=${originRef.current.value}&desitination=${destinationRef.current.value}&travelmode=${travelMode}`
+    )
+  }
 
   const clearRoute = () => {
-    setDirections(null);
-    originRef.current.value = "";
-    destinationRef.current.value = "";
-  };
+    setDirections(null)
+    originRef.current.value = ''
+    destinationRef.current.value = ''
+  }
 
   const handleTravelMode = (event) => {
-    const value = event.target.value;
-    setTravelMode(value);
-    const travelMode = travelModeList.find((mode) => mode.value === value);
-    setTravelIcon(travelMode.label);
-    setDirections(null);
-  };
+    const value = event.target.value
+    setTravelMode(value)
+    const travelMode = travelModeList.find((mode) => mode.value === value)
+    setTravelIcon(travelMode.label)
+    setDirections(null)
+  }
 
   return (
     <div className="direction">
       <Stack
         spacing={2}
         sx={{
-          width: "100%",
-          backgroundColor: "white",
-          padding: "20px",
-          borderRadius: "10px",
+          width: '100%',
+          backgroundColor: 'white',
+          padding: '20px',
+          borderRadius: '10px',
         }}
       >
         <Autocomplete>
@@ -107,25 +111,25 @@ const SearchDirection = ({ directions, setDirections }) => {
             <Sheet
               key={mode.value}
               sx={{
-                position: "relative",
+                position: 'relative',
                 width: 40,
                 height: 40,
                 flexShrink: 1,
-                borderRadius: "50%",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
                 [`& .${radioClasses.checked}`]: {
                   [`& .${radioClasses.label}`]: {
-                    color: "rgb(46, 145, 39)",
+                    color: 'rgb(46, 145, 39)',
                   },
                   [`& .${radioClasses.action}`]: {
-                    "--variant-borderWidth": "2px",
-                    borderColor: "rgb(46, 145, 39)",
+                    '--variant-borderWidth': '2px',
+                    borderColor: 'rgb(46, 145, 39)',
                   },
                 },
                 [`& .${radioClasses.action}.${radioClasses.focusVisible}`]: {
-                  outlineWidth: "2px",
+                  outlineWidth: '2px',
                 },
               }}
             >
@@ -158,7 +162,7 @@ const SearchDirection = ({ directions, setDirections }) => {
         <DirectionResults directions={directions} icon={travelIcon} />
       )}
     </div>
-  );
-};
+  )
+}
 
-export default SearchDirection;
+export default SearchDirection
