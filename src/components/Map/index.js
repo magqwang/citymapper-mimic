@@ -1,11 +1,11 @@
 import { Adjust } from '@mui/icons-material'
-import { Box, IconButton } from '@mui/material'
+import { IconButton } from '@mui/material'
 import { DirectionsRenderer, GoogleMap, Marker } from '@react-google-maps/api'
 import { useCallback, useState } from 'react'
 
 const containerStyle = {
   width: '100%',
-  height: '400px',
+  height: '90%',
   borderRadius: '10px',
 }
 
@@ -25,7 +25,7 @@ const noPoi = [
   },
 ]
 
-const Map = ({ directions }) => {
+const Map = ({ directions, routeIndex }) => {
   const [map, setMap] = useState(null)
 
   const onLoad = useCallback((map) => {
@@ -44,14 +44,14 @@ const Map = ({ directions }) => {
   }
 
   return (
-    <Box width="60%" m="20px" position="relative">
+    <>
       <IconButton
         onClick={centerMap}
         disableRipple
         sx={{
           position: 'absolute',
           right: '10px',
-          bottom: '110px',
+          bottom: '35%',
           zIndex: '1',
           backgroundColor: 'white',
           color: 'green',
@@ -75,37 +75,13 @@ const Map = ({ directions }) => {
       >
         <Marker position={center} />
         {directions && (
-          <>
-            {directions.routes.map((route, index) => {
-              if (index === 0) {
-                return (
-                  <DirectionsRenderer
-                    key={route.summary}
-                    directions={directions}
-                    options={{
-                      polylineOptions: { strokeColor: 'black' },
-                    }}
-                  />
-                )
-              } else {
-                return (
-                  <DirectionsRenderer
-                    key={route.summary}
-                    directions={directions}
-                    options={{
-                      polylineOptions: {
-                        strokeColor: 'rgba(128, 128, 128, 0.5)',
-                      },
-                    }}
-                    routeIndex={index}
-                  />
-                )
-              }
-            })}
-          </>
+          <DirectionsRenderer
+            directions={directions}
+            routeIndex={routeIndex ? routeIndex : 0}
+          />
         )}
       </GoogleMap>
-    </Box>
+    </>
   )
 }
 

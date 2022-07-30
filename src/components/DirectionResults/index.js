@@ -1,17 +1,45 @@
+import {
+  DirectionsBike,
+  DirectionsCar,
+  DirectionsTransit,
+  DirectionsWalk,
+} from '@mui/icons-material'
 import { Button, ButtonGroup, Typography } from '@mui/material'
+import { useNavigate } from 'react-router-dom'
 
-const DirectionResults = ({ directions, icon }) => {
+const travelModeList = [
+  {
+    value: 'DRIVING',
+    label: <DirectionsCar />,
+  },
+  {
+    value: 'WALKING',
+    label: <DirectionsWalk />,
+  },
+  {
+    value: 'BICYCLING',
+    label: <DirectionsBike />,
+  },
+  {
+    value: 'TRANSIT',
+    label: <DirectionsTransit />,
+  },
+]
+
+const DirectionResults = ({ directions }) => {
+  const navigate = useNavigate()
   return (
     <ButtonGroup orientation="vertical" sx={{ bgcolor: 'white', mt: '20px' }}>
-      {directions.routes.map((route) => (
+      {directions.routes.map((route, index) => (
         <Button
           key={route.summary}
-          startIcon={icon}
+          // startIcon={icon}
           sx={{
             color: 'gray',
             textTransform: 'none',
             textAlign: 'left',
           }}
+          onClick={() => navigate(`/route/${index}`)}
         >
           via {route.summary}
           <Typography
