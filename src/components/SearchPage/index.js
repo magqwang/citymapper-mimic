@@ -1,14 +1,14 @@
 import { useRef, useState } from 'react'
 import { Outlet, useNavigate } from 'react-router-dom'
 import { Autocomplete, useJsApiLoader } from '@react-google-maps/api'
-import { Box, Button, ButtonGroup, Stack } from '@mui/material'
+import { Box, Button, ButtonGroup, Stack, Typography } from '@mui/material'
 import { Radio, RadioGroup, Sheet, radioClasses } from '@mui/joy'
 import { Clear } from '@mui/icons-material'
 import { grey } from '@mui/material/colors'
 import Map from '../Map'
 import './index.css'
 
-const SearchPage = ({ directions, setDirections, modeList }) => {
+const SearchPage = ({ directions, setDirections, modeList, iconList }) => {
   const [travelMode, setTravelMode] = useState('DRIVING')
   // To remove a warning
   const [libraries] = useState(['places'])
@@ -26,7 +26,12 @@ const SearchPage = ({ directions, setDirections, modeList }) => {
     libraries: libraries,
   })
 
-  if (!isLoaded) return <p>Loading...</p>
+  if (!isLoaded)
+    return (
+      <Typography variant="h3" color="white" mt="25%">
+        Loading...
+      </Typography>
+    )
 
   const calculateRoute = async () => {
     if (originRef.current.value === '' || destinationRef.current.value === '') {
@@ -71,7 +76,7 @@ const SearchPage = ({ directions, setDirections, modeList }) => {
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'flex-start',
-          width: '40%',
+          width: '45%',
           margin: '20px',
         }}
       >
@@ -111,7 +116,7 @@ const SearchPage = ({ directions, setDirections, modeList }) => {
           >
             {modeList.map((mode) => (
               <Sheet
-                key={mode.value}
+                key={mode}
                 sx={{
                   position: 'relative',
                   width: 40,
@@ -139,8 +144,8 @@ const SearchPage = ({ directions, setDirections, modeList }) => {
                   sx={{ color: grey[500] }}
                   overlay
                   disableIcon
-                  value={mode.value}
-                  label={mode.label}
+                  value={mode}
+                  label={iconList[mode]}
                 />
               </Sheet>
             ))}
@@ -165,7 +170,7 @@ const SearchPage = ({ directions, setDirections, modeList }) => {
         </Stack>
         <Outlet />
       </Box>
-      <Box width="50%" height="100%" m="20px" position="relative">
+      <Box width="50%" m="20px" position="relative">
         <Map directions={directions} routeIndex={null} />
       </Box>
     </>

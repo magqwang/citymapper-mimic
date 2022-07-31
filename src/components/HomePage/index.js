@@ -13,13 +13,15 @@ const HomePage = () => {
           padding: '10px',
           fontWeight: '500',
           height: '10vh',
+          top: 0,
+          position: 'sticky',
+          zIndex: '2',
         }}
       >
         Citymapper - Melbourne
       </Typography>
       <Stack
         sx={{
-          height: '90vh',
           width: '100%',
           flexDirection: 'row',
           display: 'flex',

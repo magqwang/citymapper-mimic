@@ -5,7 +5,7 @@ import { useCallback, useState } from 'react'
 
 const containerStyle = {
   width: '100%',
-  height: '90%',
+  height: '400px',
   borderRadius: '10px',
 }
 
@@ -39,6 +39,18 @@ const Map = ({ directions, routeIndex }) => {
     setMap(null)
   }, [])
 
+  // const zoomMap = useCallback(
+  //   (map) => {
+  // eslint-disable-next-line no-undef
+  //     const bounds = new google.maps.LatLngBounds()
+  //     bounds.extend(directions.routes[0].legs[0].start_location)
+  //     bounds.extend(directions.routes[0].legs[0].end_location)
+  //     map.fitBounds(bounds)
+  //     setMap(map)
+  //   },
+  //   [directions.routes]
+  // )
+
   const centerMap = () => {
     map.panTo(center)
   }
@@ -51,7 +63,7 @@ const Map = ({ directions, routeIndex }) => {
         sx={{
           position: 'absolute',
           right: '10px',
-          bottom: '35%',
+          top: '10px',
           zIndex: '1',
           backgroundColor: 'white',
           color: 'green',

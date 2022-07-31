@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
-import { Box, CssBaseline, Typography } from '@mui/material'
+import { CssBaseline, Typography } from '@mui/material'
 import HomePage from '../HomePage'
 import SearchPage from '../SearchPage'
 import DirectionResults from '../DirectionResults'
@@ -7,29 +7,25 @@ import DirectionDetails from '../DirectionDetails'
 import { useState } from 'react'
 import {
   DirectionsBike,
+  DirectionsBusFilledOutlined,
   DirectionsCar,
   DirectionsTransit,
   DirectionsWalk,
+  TrainOutlined,
+  TramOutlined,
 } from '@mui/icons-material'
 
-const travelModeList = [
-  {
-    value: 'DRIVING',
-    label: <DirectionsCar />,
-  },
-  {
-    value: 'WALKING',
-    label: <DirectionsWalk />,
-  },
-  {
-    value: 'BICYCLING',
-    label: <DirectionsBike />,
-  },
-  {
-    value: 'TRANSIT',
-    label: <DirectionsTransit />,
-  },
-]
+const travelModeList = ['DRIVING', 'WALKING', 'BICYCLING', 'TRANSIT']
+
+const iconList = {
+  DRIVING: <DirectionsCar />,
+  WALKING: <DirectionsWalk />,
+  BICYCLING: <DirectionsBike />,
+  TRANSIT: <DirectionsTransit />,
+  Bus: <DirectionsBusFilledOutlined color="warning" />,
+  Train: <TrainOutlined color="info" />,
+  Tram: <TramOutlined color="success" />,
+}
 
 function App() {
   const [directions, setDirections] = useState(null)
@@ -50,7 +46,7 @@ function App() {
                     textTransform: 'uppercase',
                     textDecorationColor: 'white',
                     textDecorationLine: 'underline',
-                    marginTop: '25%',
+                    mt: '25%',
                   }}
                 >
                   Let's Explore The City
@@ -65,13 +61,19 @@ function App() {
                 directions={directions}
                 setDirections={(d) => setDirections(d)}
                 modeList={travelModeList}
+                iconList={iconList}
               />
             }
           >
             <Route
               path="/search/:addresses"
               element={
-                directions && <DirectionResults directions={directions} />
+                directions && (
+                  <DirectionResults
+                    directions={directions}
+                    iconList={iconList}
+                  />
+                )
               }
             />
           </Route>
@@ -80,7 +82,8 @@ function App() {
             element={
               <DirectionDetails
                 directions={directions}
-                modeList={travelModeList}
+                setDirections={(d) => setDirections(d)}
+                iconList={iconList}
               />
             }
           />
