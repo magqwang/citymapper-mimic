@@ -1,7 +1,7 @@
 import { Adjust } from '@mui/icons-material'
 import { IconButton } from '@mui/material'
 import { DirectionsRenderer, GoogleMap, Marker } from '@react-google-maps/api'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 const containerStyle = {
   width: '100%',
@@ -25,7 +25,7 @@ const noPoi = [
   },
 ]
 
-const Map = ({ directions, routeIndex }) => {
+const Map = ({ directions, routeIndex, stepIndex, zoomIn }) => {
   const [map, setMap] = useState(null)
 
   const onLoad = useCallback((map) => {
@@ -39,17 +39,25 @@ const Map = ({ directions, routeIndex }) => {
     setMap(null)
   }, [])
 
-  // const zoomMap = useCallback(
-  //   (map) => {
-  // eslint-disable-next-line no-undef
-  //     const bounds = new google.maps.LatLngBounds()
-  //     bounds.extend(directions.routes[0].legs[0].start_location)
-  //     bounds.extend(directions.routes[0].legs[0].end_location)
-  //     map.fitBounds(bounds)
-  //     setMap(map)
-  //   },
-  //   [directions.routes]
-  // )
+  useEffect(() => {
+    if (map && directions && routeIndex !== null && stepIndex !== null) {
+      if (zoomIn) {
+        const latLngs =
+          directions.routes[routeIndex].legs[0].steps[stepIndex].lat_lngs
+        // eslint-disable-next-line no-undef
+        const newBounds = new google.maps.LatLngBounds()
+        latLngs.forEach((latLng) => {
+          newBounds.extend({ lat: latLng.lat(), lng: latLng.lng() })
+        })
+        map.fitBounds(newBounds)
+        map.panToBounds(newBounds)
+      } else {
+        const routeBounds = directions.routes[routeIndex].bounds
+        map.fitBounds(routeBounds)
+        map.panToBounds(routeBounds)
+      }
+    }
+  }, [directions, routeIndex, stepIndex, zoomIn, map])
 
   const centerMap = () => {
     map.panTo(center)

@@ -49,7 +49,7 @@ function App() {
                     mt: '25%',
                   }}
                 >
-                  Let's Explore The City
+                  Get me somewhere
                 </Typography>
               </Link>
             }
@@ -80,11 +80,13 @@ function App() {
           <Route
             path="/route/:routeIndex"
             element={
-              <DirectionDetails
-                directions={directions}
-                setDirections={(d) => setDirections(d)}
-                iconList={iconList}
-              />
+              directions && (
+                <DirectionDetails
+                  directions={directions}
+                  setDirections={(d) => setDirections(d)}
+                  iconList={iconList}
+                />
+              )
             }
           />
         </Route>

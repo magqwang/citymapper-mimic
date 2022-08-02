@@ -28,7 +28,7 @@ const SearchPage = ({ directions, setDirections, modeList, iconList }) => {
 
   if (!isLoaded)
     return (
-      <Typography variant="h3" color="white" mt="25%">
+      <Typography variant="h3" color="white" mt="20%">
         Loading...
       </Typography>
     )
@@ -38,6 +38,8 @@ const SearchPage = ({ directions, setDirections, modeList, iconList }) => {
       return
     }
 
+    console.log(originRef.current.value)
+    console.log(destinationRef.current.value)
     // eslint-disable-next-line no-undef
     const directionService = new google.maps.DirectionsService()
 
@@ -171,7 +173,7 @@ const SearchPage = ({ directions, setDirections, modeList, iconList }) => {
         <Outlet />
       </Box>
       <Box width="50%" m="20px" position="relative">
-        <Map directions={directions} routeIndex={null} />
+        <Map directions={directions} routeIndex={null} stepIndex={null} />
       </Box>
     </>
   )
