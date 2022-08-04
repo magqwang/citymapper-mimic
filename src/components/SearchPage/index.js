@@ -8,21 +8,21 @@ import { grey } from '@mui/material/colors'
 import Map from '../Map'
 import './index.css'
 
+const GOOGLE_API_KEY = process.env.REACT_APP_GOOGLE_MAPS_API_KEY
+
 const SearchPage = ({ directions, setDirections, modeList, iconList }) => {
   const [travelMode, setTravelMode] = useState('DRIVING')
   // To remove a warning
   const [libraries] = useState(['places'])
 
-  /** @type React.mutableRefObject<HTMLInputElement> */
   const originRef = useRef()
-  /** @type React.mutableRefObject<HTMLInputElement> */
   const destinationRef = useRef()
 
   let navigate = useNavigate()
 
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
-    googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
+    googleMapsApiKey: GOOGLE_API_KEY,
     libraries: libraries,
   })
 
@@ -38,12 +38,10 @@ const SearchPage = ({ directions, setDirections, modeList, iconList }) => {
       return
     }
 
-    console.log(originRef.current.value)
-    console.log(destinationRef.current.value)
     // eslint-disable-next-line no-undef
     const directionService = new google.maps.DirectionsService()
 
-    const Results = await directionService.route({
+    const results = await directionService.route({
       origin: originRef.current.value,
       destination: destinationRef.current.value,
       // eslint-disable-next-line no-undef
@@ -51,12 +49,13 @@ const SearchPage = ({ directions, setDirections, modeList, iconList }) => {
       provideRouteAlternatives: true,
     })
 
-    console.log(Results)
-    setDirections(Results)
-
-    navigate(
-      `/search/origin=${originRef.current.value}&desitination=${destinationRef.current.value}&travelmode=${travelMode}`
-    )
+    if (results.status === 'OK') {
+      console.log(results)
+      setDirections(results)
+      navigate(
+        `/search/origin=${originRef.current.value}&desitination=${destinationRef.current.value}&travelmode=${travelMode}`
+      )
+    } else console.log(`Directions request failed due to ${results.status}`)
   }
 
   const clearRoute = () => {

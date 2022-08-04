@@ -10,8 +10,8 @@ const containerStyle = {
 }
 
 const center = {
-  lat: -37.8136276,
-  lng: 144.9630576,
+  lat: -37.8136,
+  lng: 144.9631,
 }
 
 const noPoi = [
@@ -93,7 +93,7 @@ const Map = ({ directions, routeIndex, stepIndex, zoomIn }) => {
           styles: noPoi,
         }}
       >
-        <Marker position={center} />
+        <Marker position={center} title={'Melbourne'} />
         {directions && (
           <DirectionsRenderer
             directions={directions}
