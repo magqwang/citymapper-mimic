@@ -62,7 +62,7 @@ const DirectionResults = ({ directions, iconList }) => {
                 if (step.travel_mode === 'TRANSIT') {
                   return (
                     <Box
-                      key={step.instructions}
+                      key={step.transit.line.name}
                       display="flex"
                       alignItems="center"
                     >
