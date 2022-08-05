@@ -1,5 +1,5 @@
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
-import { CssBaseline, Typography } from '@mui/material'
+import { Routes, Route, Link } from 'react-router-dom'
+import { Typography } from '@mui/material'
 import HomePage from '../HomePage'
 import SearchPage from '../SearchPage'
 import DirectionResults from '../DirectionResults'
@@ -31,8 +31,7 @@ function App() {
   const [directions, setDirections] = useState(null)
 
   return (
-    <BrowserRouter>
-      <CssBaseline />
+    <>
       <Routes>
         <Route path="/" element={<HomePage />}>
           <Route
@@ -91,7 +90,7 @@ function App() {
           />
         </Route>
       </Routes>
-    </BrowserRouter>
+    </>
   )
 }
 

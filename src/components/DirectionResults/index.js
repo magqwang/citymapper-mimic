@@ -14,7 +14,11 @@ const DirectionResults = ({ directions, iconList }) => {
         >
           {directions.routes.map((route, index) => (
             <Button
-              key={route.summary}
+              key={
+                route.legs[0].distance.value +
+                route.legs[0].duration.value +
+                index
+              }
               startIcon={iconList[travelMode]}
               disableRipple
               sx={{
@@ -76,7 +80,7 @@ const DirectionResults = ({ directions, iconList }) => {
                         {iconList[step.transit.line.vehicle.name]}
                         <span>{step.transit.line.short_name}</span>
                       </Box>
-                      <span>·</span>
+                      {i < route.legs[0].steps.length - 1 && <span>·</span>}
                     </Box>
                   )
                 } else {
