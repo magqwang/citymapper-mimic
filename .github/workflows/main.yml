@@ -28,4 +28,4 @@ jobs:
         run: REACT_APP_GOOGLE_MAPS_API_KEY=${{ secrets.GOOGLE_API_KEY }} REACT_APP_PTV_API_KEY=${{ secrets.PTV_API_KEY }} REACT_APP_PTV_DEV_ID=${{ secrets.PTV_DEV_ID }} npm run build
 
       - name: Deploy static site to S3 bucket
-        run: aws s3 sync /build s3://${{ secrets.BUCKET}} --delete
+        run: aws s3 sync ./build/ s3://${{ secrets.BUCKET}} --delete
