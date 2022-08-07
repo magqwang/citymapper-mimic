@@ -1,12 +1,21 @@
 import { useRef, useState } from 'react'
 import { Outlet, useNavigate } from 'react-router-dom'
 import { Autocomplete, useJsApiLoader } from '@react-google-maps/api'
-import { Box, Button, ButtonGroup, Stack, Typography } from '@mui/material'
+import {
+  Box,
+  Button,
+  ButtonGroup,
+  FormControl,
+  FormLabel,
+  Stack,
+  Typography,
+} from '@mui/material'
 import { Radio, RadioGroup, Sheet, radioClasses } from '@mui/joy'
 import { Clear } from '@mui/icons-material'
 import { grey } from '@mui/material/colors'
 import Map from '../Map'
 import './index.css'
+import { visuallyHidden } from '@mui/utils'
 
 const GOOGLE_API_KEY = process.env.REACT_APP_GOOGLE_MAPS_API_KEY
 
@@ -28,7 +37,7 @@ const SearchPage = ({ directions, setDirections, modeList, iconList }) => {
 
   if (!isLoaded)
     return (
-      <Typography variant="h3" color="white" mt="20%">
+      <Typography variant="h3" component="h2" color="white" mt="10%">
         Loading...
       </Typography>
     )
@@ -106,51 +115,59 @@ const SearchPage = ({ directions, setDirections, modeList, iconList }) => {
               ref={destinationRef}
             />
           </Autocomplete>
-          <RadioGroup
-            row
-            sx={{ gap: 2 }}
-            aria-labelledby="travelmode-radio-buttons-label"
-            defaultValue="DRIVING"
-            name="travelmode-radio-buttons-group"
-            value={travelMode}
-            onChange={handleTravelMode}
-          >
-            {modeList.map((mode) => (
-              <Sheet
-                key={mode}
-                sx={{
-                  position: 'relative',
-                  width: 40,
-                  height: 40,
-                  flexShrink: 1,
-                  borderRadius: '50%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  [`& .${radioClasses.checked}`]: {
-                    [`& .${radioClasses.label}`]: {
-                      color: 'rgb(46, 145, 39)',
+          <FormControl>
+            <FormLabel id="travelmode-radio-buttons-label" sx={visuallyHidden}>
+              Select Travel Mode
+            </FormLabel>
+            <RadioGroup
+              row
+              sx={{ gap: 2 }}
+              aria-labelledby="travelmode-radio-buttons-label"
+              name="travelmode-radio-buttons-group"
+              defaultValue="DRIVING"
+              value={travelMode}
+              onChange={handleTravelMode}
+            >
+              {modeList.map((mode) => (
+                <Sheet
+                  key={mode}
+                  sx={{
+                    position: 'relative',
+                    width: 40,
+                    height: 40,
+                    flexShrink: 1,
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    [`& .${radioClasses.checked}`]: {
+                      [`& .${radioClasses.label}`]: {
+                        color: 'rgb(46, 145, 39)',
+                      },
+                      [`& .${radioClasses.action}`]: {
+                        '--variant-borderWidth': '2px',
+                        borderColor: 'rgb(46, 145, 39)',
+                      },
                     },
-                    [`& .${radioClasses.action}`]: {
-                      '--variant-borderWidth': '2px',
-                      borderColor: 'rgb(46, 145, 39)',
-                    },
-                  },
-                  [`& .${radioClasses.action}.${radioClasses.focusVisible}`]: {
-                    outlineWidth: '2px',
-                  },
-                }}
-              >
-                <Radio
-                  sx={{ color: grey[500] }}
-                  overlay
-                  disableIcon
-                  value={mode}
-                  label={iconList[mode]}
-                />
-              </Sheet>
-            ))}
-          </RadioGroup>
+                    [`& .${radioClasses.action}.${radioClasses.focusVisible}`]:
+                      {
+                        outlineWidth: '2px',
+                      },
+                  }}
+                >
+                  <Radio
+                    sx={{ color: grey[500] }}
+                    overlay
+                    disableIcon
+                    value={mode}
+                    label={iconList[mode]}
+                    name={mode}
+                    componentsProps={{ input: { 'aria-label': { mode } } }}
+                  />
+                </Sheet>
+              ))}
+            </RadioGroup>
+          </FormControl>
           <ButtonGroup>
             <Button
               variant="contained"

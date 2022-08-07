@@ -1,25 +1,27 @@
 import { Outlet } from 'react-router-dom'
-import { Stack, Typography } from '@mui/material'
+import { AppBar, IconButton, Stack, Toolbar, Typography } from '@mui/material'
+import { Home } from '@mui/icons-material'
 
 const HomePage = () => {
   return (
-    <>
-      <Typography
-        variant="h5"
-        component="h1"
-        sx={{
-          color: 'white',
-          backgroundColor: 'rgb(46, 145, 39)',
-          padding: '10px',
-          fontWeight: '500',
-          height: '10vh',
-          top: 0,
-          position: 'sticky',
-          zIndex: '2',
-        }}
-      >
-        Citymapper - Melbourne
-      </Typography>
+    <main>
+      <AppBar position="sticky" sx={{ backgroundColor: 'rgb(46, 145, 39)' }}>
+        <Toolbar>
+          <IconButton
+            size="large"
+            edge="start"
+            color="inherit"
+            aria-label="home"
+            sx={{ mr: 2 }}
+            href="/"
+          >
+            <Home />
+          </IconButton>
+          <Typography variant="h5" component="h1" sx={{ flexGrow: 1 }}>
+            Citymapper - Melbourne
+          </Typography>
+        </Toolbar>
+      </AppBar>
       <Stack
         sx={{
           width: '100%',
@@ -31,7 +33,7 @@ const HomePage = () => {
       >
         <Outlet />
       </Stack>
-    </>
+    </main>
   )
 }
 

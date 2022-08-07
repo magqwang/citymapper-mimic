@@ -1,9 +1,10 @@
-import { Routes, Route, Link } from 'react-router-dom'
-import { Typography } from '@mui/material'
+import { Routes, Route } from 'react-router-dom'
+import { Link } from '@mui/material'
 import HomePage from '../HomePage'
 import SearchPage from '../SearchPage'
 import DirectionResults from '../DirectionResults'
 import DirectionDetails from '../DirectionDetails'
+import NotFound from '../NotFound'
 import { useState } from 'react'
 import {
   DirectionsBike,
@@ -34,22 +35,21 @@ function App() {
     <>
       <Routes>
         <Route path="/" element={<HomePage />}>
+          <Route path="*" element={<NotFound />} />
           <Route
             index
             element={
-              <Link to="/search">
-                <Typography
-                  variant="h4"
-                  sx={{
-                    color: 'white',
-                    textTransform: 'uppercase',
-                    textDecorationColor: 'white',
-                    textDecorationLine: 'underline',
-                    mt: '25%',
-                  }}
-                >
-                  Get me somewhere
-                </Typography>
+              <Link
+                href="/search"
+                underline="hover"
+                variant="h2"
+                fontSize="2rem"
+                fontWeight="regular"
+                letterSpacing="0.1rem"
+                mt="15%"
+                sx={{ color: 'white', textTransform: 'uppercase' }}
+              >
+                Get me somewhere
               </Link>
             }
           />

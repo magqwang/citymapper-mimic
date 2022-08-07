@@ -18,6 +18,7 @@ import {
 } from '@mui/material'
 import { HmacSHA1 } from 'crypto-js'
 import Map from '../Map'
+import { visuallyHidden } from '@mui/utils'
 
 const PTV_API_KEY = process.env.REACT_APP_PTV_API_KEY
 const PTV_DEV_ID = process.env.REACT_APP_PTV_DEV_ID
@@ -254,6 +255,7 @@ const DirectionDetails = ({ directions, setDirections, iconList }) => {
             <>
               {directionsSteps.map((step, i) => {
                 if (step.travel_mode === 'TRANSIT') {
+                  //TRANSIT Mode
                   return (
                     <Box
                       key={step.transit.line.name}
@@ -268,12 +270,16 @@ const DirectionDetails = ({ directions, setDirections, iconList }) => {
                         }}
                       >
                         {iconList[step.transit.line.vehicle.name]}
+                        <Box component="span" sx={visuallyHidden}>
+                          {step.transit.line.vehicle.name}
+                        </Box>
                         <span>{step.transit.line.short_name}</span>
                       </Box>
                       <span>·</span>
                     </Box>
                   )
                 } else {
+                  //Non-TRANSIT Mode
                   return (
                     <Box
                       key={step.instructions}
@@ -281,6 +287,9 @@ const DirectionDetails = ({ directions, setDirections, iconList }) => {
                       alignItems="center"
                     >
                       {iconList[step.travel_mode]}
+                      <Box component="span" sx={visuallyHidden}>
+                        {step.travel_mode}
+                      </Box>
                       {i < directionsSteps.length - 1 && <span>·</span>}
                     </Box>
                   )
@@ -288,7 +297,12 @@ const DirectionDetails = ({ directions, setDirections, iconList }) => {
               })}
             </>
           ) : (
-            iconList[travelMode]
+            <>
+              {iconList[travelMode]}
+              <Box component="span" sx={visuallyHidden}>
+                {travelMode}
+              </Box>
+            </>
           )}
         </Box>
         <Typography variant="h4" sx={{ color: 'rgb(55, 171, 46)' }}>
@@ -336,6 +350,9 @@ const DirectionDetails = ({ directions, setDirections, iconList }) => {
                   <Stack direction="row" alignItems="center">
                     <ListItemIcon>
                       {iconList[step.transit.line.vehicle.name]}
+                      <Box component="span" sx={visuallyHidden}>
+                        {step.transit.line.vehicle.name}
+                      </Box>
                     </ListItemIcon>
                     <ListItemText
                       primary={step.transit.line.short_name}
@@ -438,6 +455,9 @@ const DirectionDetails = ({ directions, setDirections, iconList }) => {
                 // Step summary of non-TRANSIT mode
                 <>
                   {iconList[step.travel_mode]}
+                  <Box component="span" sx={visuallyHidden}>
+                    {step.travel_mode}
+                  </Box>
                   <Typography
                     variant="body-1"
                     dangerouslySetInnerHTML={{ __html: step.instructions }}

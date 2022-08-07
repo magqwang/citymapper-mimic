@@ -76,6 +76,7 @@ const Map = ({ directions, routeIndex, stepIndex, zoomIn }) => {
           backgroundColor: 'white',
           color: 'green',
         }}
+        aria-label="center map"
       >
         <Adjust />
       </IconButton>
@@ -98,6 +99,7 @@ const Map = ({ directions, routeIndex, stepIndex, zoomIn }) => {
           <DirectionsRenderer
             directions={directions}
             routeIndex={routeIndex ? routeIndex : 0}
+            options={{ markerOptions: { title: 'Map Marker' } }}
           />
         )}
       </GoogleMap>
