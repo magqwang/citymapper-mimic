@@ -37,7 +37,13 @@ const SearchPage = ({ directions, setDirections, modeList, iconList }) => {
 
   if (!isLoaded)
     return (
-      <Typography variant="h3" component="h2" color="white" mt="10%">
+      <Typography
+        variant="h3"
+        component="h2"
+        color="white"
+        mt="10%"
+        test-dataid="not-loaded-text"
+      >
         Loading...
       </Typography>
     )
@@ -104,6 +110,7 @@ const SearchPage = ({ directions, setDirections, modeList, iconList }) => {
               className="search-input"
               type="text"
               placeholder="Start"
+              aria-label="start-address"
               ref={originRef}
             />
           </Autocomplete>
@@ -112,6 +119,7 @@ const SearchPage = ({ directions, setDirections, modeList, iconList }) => {
               className="search-input"
               type="text"
               placeholder="End"
+              aria-label="end-address"
               ref={destinationRef}
             />
           </Autocomplete>

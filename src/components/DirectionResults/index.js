@@ -28,6 +28,7 @@ const DirectionResults = ({ directions, iconList }) => {
                 borderColor: 'lightgray',
               }}
               onClick={() => navigate(`/route/${index}`)}
+              data-testid="direction-result"
             >
               via {route.summary}
               <Typography
@@ -35,6 +36,7 @@ const DirectionResults = ({ directions, iconList }) => {
                 color="black"
                 ml="auto"
                 sx={{ textAlign: 'center' }}
+                data-testid="route-duration"
               >
                 {route.legs[0].duration.text}
               </Typography>

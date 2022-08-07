@@ -1,11 +1,11 @@
 import { Adjust } from '@mui/icons-material'
-import { IconButton } from '@mui/material'
+import { Box, IconButton } from '@mui/material'
 import { DirectionsRenderer, GoogleMap, Marker } from '@react-google-maps/api'
 import { useCallback, useEffect, useState } from 'react'
 
 const containerStyle = {
   width: '100%',
-  height: '400px',
+  height: '350px',
   borderRadius: '10px',
 }
 
@@ -64,7 +64,7 @@ const Map = ({ directions, routeIndex, stepIndex, zoomIn }) => {
   }
 
   return (
-    <>
+    <Box position="sticky" top="5rem">
       <IconButton
         onClick={centerMap}
         disableRipple
@@ -99,11 +99,11 @@ const Map = ({ directions, routeIndex, stepIndex, zoomIn }) => {
           <DirectionsRenderer
             directions={directions}
             routeIndex={routeIndex ? routeIndex : 0}
-            options={{ markerOptions: { title: 'Map Marker' } }}
+            options={{ markerOptions: { title: 'Start/End Marker' } }}
           />
         )}
       </GoogleMap>
-    </>
+    </Box>
   )
 }
 

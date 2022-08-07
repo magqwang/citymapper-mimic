@@ -1,10 +1,9 @@
 import { useRef, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { ArrowForward, ExpandLess, ExpandMore } from '@mui/icons-material'
 import {
   Avatar,
   Box,
-  Button,
   Collapse,
   Divider,
   List,
@@ -23,8 +22,7 @@ import { visuallyHidden } from '@mui/utils'
 const PTV_API_KEY = process.env.REACT_APP_PTV_API_KEY
 const PTV_DEV_ID = process.env.REACT_APP_PTV_DEV_ID
 
-const DirectionDetails = ({ directions, setDirections, iconList }) => {
-  const navigate = useNavigate()
+const DirectionDetails = ({ directions, iconList }) => {
   const params = useParams()
   const routeIndex = parseInt(params.routeIndex)
   const [stepIndex, setStepIndex] = useState(null)
@@ -49,24 +47,6 @@ const DirectionDetails = ({ directions, setDirections, iconList }) => {
     else setZoomIn(true)
   }
 
-  const handleClick = async (event, index) => {
-    event.stopPropagation()
-    if (!stepShowStops[index]) {
-      const stopList = await getStops(directionsSteps[index])
-      // console.log(stopList)
-      const newStepStops = stepStops.map((stop, i) => {
-        if (i === index) return stopList
-        else return stop
-      })
-      setStepStops(newStepStops)
-    }
-    const newShowStops = stepShowStops.map((showStop, i) => {
-      if (i === index) return !showStop
-      else return showStop
-    })
-    setStepShowStops(newShowStops)
-  }
-
   const calculatePTVSignature = (request) => {
     const signature = HmacSHA1(request, PTV_API_KEY)
     return signature.toString().toUpperCase()
@@ -82,20 +62,25 @@ const DirectionDetails = ({ directions, setDirections, iconList }) => {
     }
   }
 
-  // useEffect(() => {
   const getStops = async (step) => {
-    // const allStops = []
-    // for (let step of directionsSteps) {
-    // if (step.travel_mode === 'TRANSIT') {
     const routeNumber = step.transit.line.short_name
     let headSign = step.transit.headsign
-    const departureStop = step.transit.departure_stop.name
+    let departureStop = step.transit.departure_stop.name
     const numStops = step.transit.num_stops
     // fetch route_id and route_type
-    let api_request = `/v3/routes?route_name=${routeNumber.replace(
-      ' ',
-      '%20'
-    )}&devid=${PTV_DEV_ID}`
+    let api_request
+    if (routeNumber.includes('/')) {
+      api_request = `/v3/routes?route_name=${routeNumber.replace(
+        '/',
+        '-'
+      )}&devid=${PTV_DEV_ID}`
+    } else {
+      api_request = `/v3/routes?route_name=${routeNumber.replace(
+        ' ',
+        '%20'
+      )}&devid=${PTV_DEV_ID}`
+    }
+
     let signature = calculatePTVSignature(api_request)
     let data = await fetchPTV(api_request, signature)
     // console.log(data)
@@ -113,14 +98,21 @@ const DirectionDetails = ({ directions, setDirections, iconList }) => {
     }
 
     if (step.transit.line.vehicle.name === 'Tram') {
-      const stringIndex = headSign.indexOf('to')
-      // console.log(stringIndex)
-      if (stringIndex !== -1) headSign = headSign.slice(stringIndex + 3)
+      // Extract the destination when the format is 'origin to destination'
+      const stringIndex = headSign.indexOf(' to ')
+      if (stringIndex !== -1) headSign = headSign.slice(stringIndex + 4)
     }
-    // console.log(headSign)
-    const lineDirection = data.directions.find((direction) =>
+    let lineDirection = data.directions.find((direction) =>
       direction.direction_name.startsWith(headSign)
     )
+
+    if (!lineDirection) {
+      headSign = headSign.replace('St.', 'St')
+      lineDirection = data.directions.find((direction) =>
+        direction.direction_name.startsWith(headSign)
+      )
+    }
+
     if (!lineDirection) {
       console.log(`Error matching the line direction infomation`)
       return null
@@ -133,7 +125,22 @@ const DirectionDetails = ({ directions, setDirections, iconList }) => {
     signature = calculatePTVSignature(api_request)
     data = await fetchPTV(api_request, signature)
     // console.log(data)
-    // console.log(departureStop)
+
+    if (departureStop.includes(' / ')) {
+      //trim space next to '/'
+      const i = departureStop.indexOf('/')
+      departureStop =
+        departureStop.slice(0, i - 1) + '/' + departureStop.slice(i + 2)
+    }
+
+    if (departureStop.includes('Shopping Centre')) {
+      departureStop = departureStop.replace('Shopping Centre', 'SC')
+    }
+
+    if (departureStop.includes('Railway Station')) {
+      departureStop = departureStop.replace('Railway Station', 'Station')
+    }
+
     let firstStop
     if (routeType === 0) {
       firstStop = data.stops.find((stop) => {
@@ -144,8 +151,8 @@ const DirectionDetails = ({ directions, setDirections, iconList }) => {
         }
       })
     } else if (routeType === 1) {
+      // it's a tram
       firstStop = data.stops.find((stop) => {
-        // console.log(departureStop)
         if (/^\d+/.test(stop.stop_name)) {
           //stop_name start with number
           // console.log('start with number:', stop.stop_name)
@@ -182,12 +189,6 @@ const DirectionDetails = ({ directions, setDirections, iconList }) => {
       })
     } else {
       firstStop = data.stops.find((stop) => stop.stop_name === departureStop)
-      if (!firstStop) {
-        firstStop = data.stops.find(
-          (stop) =>
-            stop.stop_name === departureStop.replace('Shopping Centre', 'SC')
-        )
-      }
     }
 
     if (!firstStop) {
@@ -205,30 +206,29 @@ const DirectionDetails = ({ directions, setDirections, iconList }) => {
         return null
       } else stopList.push(stop.stop_name)
     }
-    // allStops.push(stopList)
     return stopList
-    // } else {
-    //   // allStops.push(null)
-    // }
-    // return allStops
-    // }
-    // setStepStops(allStops)
   }
-  //   getStops()
-  // }, [directionsSteps])
+
+  const handleClick = async (event, index) => {
+    event.stopPropagation()
+    if (!stepShowStops[index]) {
+      const stopList = await getStops(directionsSteps[index])
+      // console.log(stopList)
+      const newStepStops = stepStops.map((stop, i) => {
+        if (i === index) return stopList
+        else return stop
+      })
+      setStepStops(newStepStops)
+    }
+    const newShowStops = stepShowStops.map((showStop, i) => {
+      if (i === index) return !showStop
+      else return showStop
+    })
+    setStepShowStops(newShowStops)
+  }
 
   return (
     <Stack spacing={2} alignItems="center" mt="1em" width="100%">
-      {/* Link to homepage */}
-      <Button
-        onClick={() => {
-          setDirections(null)
-          navigate('/')
-        }}
-        sx={{ alignSelf: 'flex-start', color: 'white' }}
-      >
-        Back to homepage
-      </Button>
       {/* Show Origin and Destination */}
       <Stack direction="row" justifyContent="center" alignItems="center">
         <Typography variant="h5" color="white" mx="1em" textAlign="center">
