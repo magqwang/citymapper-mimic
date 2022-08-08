@@ -333,7 +333,9 @@ const DirectionDetails = ({ directions, iconList }) => {
               key={
                 step.travel_mode === 'TRANSIT'
                   ? step.transit.line.name
-                  : step.instructions
+                  : step.distance.value +
+                    step.duration.value +
+                    Math.floor(Math.random() * 10000)
               }
               disableRipple
               sx={{
