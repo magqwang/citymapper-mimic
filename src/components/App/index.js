@@ -1,5 +1,4 @@
-import { Routes, Route } from 'react-router-dom'
-import { Link } from '@mui/material'
+import { Routes, Route, Link } from 'react-router-dom'
 import HomePage from '../HomePage'
 import SearchPage from '../SearchPage'
 import DirectionResults from '../DirectionResults'
@@ -40,14 +39,14 @@ function App() {
             index
             element={
               <Link
-                href="/search"
-                underline="hover"
-                variant="h2"
-                fontSize="2rem"
-                fontWeight="regular"
-                letterSpacing="0.1rem"
-                mt="15%"
-                sx={{ color: 'white', textTransform: 'uppercase' }}
+                to="/search"
+                style={{
+                  color: 'white',
+                  fontSize: '2rem',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.1rem',
+                  marginTop: '15%',
+                }}
               >
                 Get me somewhere
               </Link>
