@@ -33,7 +33,6 @@ const DirectionDetails = ({ directions, iconList }) => {
     directionsSteps.map(() => false)
   )
   const [stepStops, setStepStops] = useState(directionsSteps.map(() => null))
-  // console.log(stepStops)
 
   const duration = directions.routes[routeIndex].legs[0].duration.text
   const travelMode = directions.request.travelMode
@@ -184,7 +183,16 @@ const DirectionDetails = ({ directions, iconList }) => {
               Number(departureStop.match(/\d+$/)[0]) ===
               Number(stop.stop_name.match(/\d+$/)[0])
             )
-          } else return stop.stop_name.startsWith(departureStop)
+          } else {
+            if (stop.stop_name.includes('Railway Station')) {
+              // console.log(stop.stop_name)
+              const stop_name = stop.stop_name.replace(
+                'Railway Station',
+                'Station'
+              )
+              return stop_name.startsWith(departureStop)
+            } else return stop.stop_name.startsWith(departureStop)
+          }
         } else return stop.stop_name.startsWith(departureStop)
       })
     } else {
