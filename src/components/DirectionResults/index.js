@@ -17,7 +17,7 @@ const DirectionResults = ({ directions, iconList }) => {
               key={
                 route.legs[0].distance.value +
                 route.legs[0].duration.value +
-                index
+                Math.floor(Math.random() * 10000)
               }
               startIcon={iconList[travelMode]}
               disableRipple
@@ -54,12 +54,16 @@ const DirectionResults = ({ directions, iconList }) => {
               key={
                 route.legs[0].distance.value +
                 route.legs[0].duration.value +
-                index
+                Math.floor(Math.random() * 10000)
               }
               sx={{
                 color: 'gray',
                 textTransform: 'none',
                 textAlign: 'left',
+                display: 'flex',
+                justifyContent: 'flex-start',
+                alignItems: 'center',
+                flexWrap: 'wrap',
               }}
               disableRipple
               onClick={() => navigate(`/route/${index}`)}

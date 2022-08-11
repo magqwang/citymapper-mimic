@@ -9,7 +9,7 @@ const containerStyle = {
   borderRadius: '10px',
 }
 
-const center = {
+const melbourneCenter = {
   lat: -37.8136,
   lng: 144.9631,
 }
@@ -25,13 +25,13 @@ const noPoi = [
   },
 ]
 
-const Map = ({ directions, routeIndex, stepIndex, zoomIn }) => {
+const Map = ({ cityBounds, directions, routeIndex, stepIndex, zoomIn }) => {
   const [map, setMap] = useState(null)
 
   const onLoad = useCallback((map) => {
     // eslint-disable-next-line no-undef
-    const bounds = new google.maps.LatLngBounds(center)
-    map.fitBounds(bounds)
+    const center = new google.maps.LatLng(melbourneCenter)
+    map.setCenter(center)
     setMap(map)
   }, [])
 
@@ -60,7 +60,7 @@ const Map = ({ directions, routeIndex, stepIndex, zoomIn }) => {
   }, [directions, routeIndex, stepIndex, zoomIn, map])
 
   const centerMap = () => {
-    map.panTo(center)
+    map.panTo(melbourneCenter)
   }
 
   return (
@@ -82,7 +82,7 @@ const Map = ({ directions, routeIndex, stepIndex, zoomIn }) => {
       </IconButton>
       <GoogleMap
         mapContainerStyle={containerStyle}
-        center={center}
+        center={melbourneCenter}
         zoom={10}
         onLoad={onLoad}
         onUnmount={onUnmount}
@@ -92,9 +92,13 @@ const Map = ({ directions, routeIndex, stepIndex, zoomIn }) => {
           mapTypeControl: false,
           fullscreenControl: false,
           styles: noPoi,
+          restriction: {
+            latLngBounds: cityBounds,
+            strictBounds: true,
+          },
         }}
       >
-        <Marker position={center} title={'Melbourne'} />
+        <Marker position={melbourneCenter} title={'Melbourne'} />
         {directions && (
           <DirectionsRenderer
             directions={directions}

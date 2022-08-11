@@ -1,8 +1,10 @@
-import { Outlet } from 'react-router-dom'
+import { Outlet, useNavigate } from 'react-router-dom'
 import { AppBar, IconButton, Stack, Toolbar, Typography } from '@mui/material'
 import { Home } from '@mui/icons-material'
 
 const HomePage = () => {
+  let navigate = useNavigate()
+
   return (
     <main>
       <AppBar position="sticky" sx={{ backgroundColor: 'rgb(46, 145, 39)' }}>
@@ -13,7 +15,9 @@ const HomePage = () => {
             color="inherit"
             aria-label="home"
             sx={{ mr: 2 }}
-            href="/"
+            onClick={() => {
+              navigate('/')
+            }}
           >
             <Home />
           </IconButton>

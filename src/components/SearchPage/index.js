@@ -7,6 +7,7 @@ import {
   ButtonGroup,
   FormControl,
   FormLabel,
+  InputLabel,
   Stack,
   Typography,
 } from '@mui/material'
@@ -19,7 +20,13 @@ import { visuallyHidden } from '@mui/utils'
 
 const GOOGLE_API_KEY = process.env.REACT_APP_GOOGLE_MAPS_API_KEY
 
-const SearchPage = ({ directions, setDirections, modeList, iconList }) => {
+const SearchPage = ({
+  cityBounds,
+  directions,
+  setDirections,
+  modeList,
+  iconList,
+}) => {
   const [travelMode, setTravelMode] = useState('DRIVING')
   // To remove a warning
   const [libraries] = useState(['places'])
@@ -65,7 +72,7 @@ const SearchPage = ({ directions, setDirections, modeList, iconList }) => {
     })
 
     if (results.status === 'OK') {
-      console.log(results)
+      // console.log(results)
       setDirections(results)
       navigate(
         `/search/origin=${originRef.current.value}&desitination=${destinationRef.current.value}&travelmode=${travelMode}`
@@ -82,7 +89,7 @@ const SearchPage = ({ directions, setDirections, modeList, iconList }) => {
   const handleTravelMode = (event) => {
     const value = event.target.value
     setTravelMode(value)
-    setDirections(null)
+    // setDirections(null)
   }
 
   return (
@@ -105,31 +112,42 @@ const SearchPage = ({ directions, setDirections, modeList, iconList }) => {
             borderRadius: '10px',
           }}
         >
-          <Autocomplete>
-            <input
-              className="search-input"
-              type="text"
-              placeholder="Start"
-              aria-label="start-address"
-              ref={originRef}
-            />
-          </Autocomplete>
-          <Autocomplete>
-            <input
-              className="search-input"
-              type="text"
-              placeholder="End"
-              aria-label="end-address"
-              ref={destinationRef}
-            />
-          </Autocomplete>
           <FormControl>
+            <InputLabel htmlFor="start" sx={visuallyHidden}>
+              Start address
+            </InputLabel>
+            <Autocomplete bounds={cityBounds} options={{ strictBounds: true }}>
+              <input
+                className="search-input"
+                type="text"
+                name="start"
+                id="start"
+                placeholder="Start"
+                aria-label="start-address"
+                ref={originRef}
+              />
+            </Autocomplete>
+            <InputLabel htmlFor="end" sx={visuallyHidden}>
+              End address
+            </InputLabel>
+            <Autocomplete bounds={cityBounds} options={{ strictBounds: true }}>
+              <input
+                className="search-input"
+                type="text"
+                name="end"
+                id="end"
+                placeholder="End"
+                aria-label="end-address"
+                ref={destinationRef}
+              />
+            </Autocomplete>
+
             <FormLabel id="travelmode-radio-buttons-label" sx={visuallyHidden}>
               Select Travel Mode
             </FormLabel>
             <RadioGroup
               row
-              sx={{ gap: 2 }}
+              sx={{ gap: 2, mb: 1 }}
               aria-labelledby="travelmode-radio-buttons-label"
               name="travelmode-radio-buttons-group"
               defaultValue="DRIVING"
@@ -175,29 +193,36 @@ const SearchPage = ({ directions, setDirections, modeList, iconList }) => {
                 </Sheet>
               ))}
             </RadioGroup>
+            <ButtonGroup>
+              <Button
+                variant="contained"
+                color="success"
+                type="submit"
+                onClick={calculateRoute}
+              >
+                Calculate Route
+              </Button>
+              <Button
+                variant="contained"
+                color="success"
+                endIcon={<Clear />}
+                onClick={clearRoute}
+              >
+                Clear Route
+              </Button>
+            </ButtonGroup>
           </FormControl>
-          <ButtonGroup>
-            <Button
-              variant="contained"
-              color="success"
-              onClick={calculateRoute}
-            >
-              Calculate Route
-            </Button>
-            <Button
-              variant="contained"
-              color="success"
-              endIcon={<Clear />}
-              onClick={clearRoute}
-            >
-              Clear Route
-            </Button>
-          </ButtonGroup>
         </Stack>
         <Outlet />
       </Box>
       <Box width="50%" m="20px" position="relative">
-        <Map directions={directions} routeIndex={null} stepIndex={null} />
+        <Map
+          cityBounds={cityBounds}
+          directions={directions}
+          routeIndex={null}
+          stepIndex={null}
+          zoomin={null}
+        />
       </Box>
     </>
   )

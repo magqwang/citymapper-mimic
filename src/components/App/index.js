@@ -27,6 +27,13 @@ const iconList = {
   Tram: <TramOutlined color="success" />,
 }
 
+const melbourneBounds = {
+  south: -39.31678751348631,
+  west: 143.27120546875,
+  north: -36.27917280830617,
+  east: 146.65499453125,
+}
+
 function App() {
   const [directions, setDirections] = useState(null)
 
@@ -47,6 +54,7 @@ function App() {
                   letterSpacing: '0.1rem',
                   marginTop: '15%',
                 }}
+                onClick={() => setDirections(null)}
               >
                 Get me somewhere
               </Link>
@@ -56,6 +64,7 @@ function App() {
             path="/search"
             element={
               <SearchPage
+                cityBounds={melbourneBounds}
                 directions={directions}
                 setDirections={(d) => setDirections(d)}
                 modeList={travelModeList}
@@ -80,8 +89,8 @@ function App() {
             element={
               directions && (
                 <DirectionDetails
+                  cityBounds={melbourneBounds}
                   directions={directions}
-                  setDirections={(d) => setDirections(d)}
                   iconList={iconList}
                 />
               )

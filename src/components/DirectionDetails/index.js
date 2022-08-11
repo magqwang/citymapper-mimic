@@ -22,7 +22,7 @@ import { visuallyHidden } from '@mui/utils'
 const PTV_API_KEY = process.env.REACT_APP_PTV_API_KEY
 const PTV_DEV_ID = process.env.REACT_APP_PTV_DEV_ID
 
-const DirectionDetails = ({ directions, iconList }) => {
+const DirectionDetails = ({ cityBounds, directions, iconList }) => {
   const params = useParams()
   const routeIndex = parseInt(params.routeIndex)
   const [stepIndex, setStepIndex] = useState(null)
@@ -62,29 +62,28 @@ const DirectionDetails = ({ directions, iconList }) => {
   }
 
   const getStops = async (step) => {
-    const routeNumber = step.transit.line.short_name
+    let routeNumber = step.transit.line.short_name
     let headSign = step.transit.headsign
     let departureStop = step.transit.departure_stop.name
     const numStops = step.transit.num_stops
+    // console.log(routeNumber)
     // fetch route_id and route_type
-    let api_request
-    if (routeNumber.includes('/')) {
-      api_request = `/v3/routes?route_name=${routeNumber.replace(
-        '/',
-        '-'
-      )}&devid=${PTV_DEV_ID}`
-    } else {
-      api_request = `/v3/routes?route_name=${routeNumber.replace(
-        ' ',
-        '%20'
-      )}&devid=${PTV_DEV_ID}`
-    }
+    if (routeNumber.includes('/')) routeNumber = routeNumber.replace('/', '-')
+    if (routeNumber.includes(' ')) routeNumber = routeNumber.replace(' ', '%20')
 
+    let api_request = `/v3/routes?route_name=${routeNumber}&devid=${PTV_DEV_ID}`
     let signature = calculatePTVSignature(api_request)
     let data = await fetchPTV(api_request, signature)
     // console.log(data)
-    const routeId = data.routes[0].route_id
-    const routeType = data.routes[0].route_type
+    const route = data.routes.find((route) => {
+      if (routeNumber.includes('%20'))
+        routeNumber = routeNumber.replace('%20', ' ')
+      if (route.route_number !== '') return route.route_number === routeNumber
+      else return route.route_name === routeNumber
+    })
+    // console.log(route)
+    const routeId = route.route_id
+    const routeType = route.route_type
 
     // fetch directionId
     api_request = `/v3/directions/route/${routeId}?devid=${PTV_DEV_ID}`
@@ -125,20 +124,11 @@ const DirectionDetails = ({ directions, iconList }) => {
     data = await fetchPTV(api_request, signature)
     // console.log(data)
 
-    if (departureStop.includes(' / ')) {
+    if (departureStop.includes(' / '))
       //trim space next to '/'
-      const i = departureStop.indexOf('/')
-      departureStop =
-        departureStop.slice(0, i - 1) + '/' + departureStop.slice(i + 2)
-    }
+      departureStop = departureStop.replace(' / ', '/')
 
-    if (departureStop.includes('Shopping Centre')) {
-      departureStop = departureStop.replace('Shopping Centre', 'SC')
-    }
-
-    if (departureStop.includes('Railway Station')) {
-      departureStop = departureStop.replace('Railway Station', 'Station')
-    }
+    // console.log(departureStop)
 
     let firstStop
     if (routeType === 0) {
@@ -184,19 +174,36 @@ const DirectionDetails = ({ directions, iconList }) => {
               Number(stop.stop_name.match(/\d+$/)[0])
             )
           } else {
-            if (stop.stop_name.includes('Railway Station')) {
-              // console.log(stop.stop_name)
-              const stop_name = stop.stop_name.replace(
-                'Railway Station',
-                'Station'
-              )
-              return stop_name.startsWith(departureStop)
-            } else return stop.stop_name.startsWith(departureStop)
+            return stop.stop_name.startsWith(departureStop)
           }
         } else return stop.stop_name.startsWith(departureStop)
       })
     } else {
-      firstStop = data.stops.find((stop) => stop.stop_name === departureStop)
+      firstStop = data.stops.find((stop) =>
+        stop.stop_name.startsWith(departureStop)
+      )
+    }
+
+    if (!firstStop) {
+      firstStop = data.stops.find((stop) => {
+        if (departureStop.includes('Shopping Centre'))
+          departureStop = departureStop.replace('Shopping Centre', 'SC')
+        if (departureStop.includes('Railway Station'))
+          departureStop = departureStop.replace('Railway Station', 'Station')
+        return stop.stop_name.startsWith(departureStop)
+      })
+    }
+
+    if (!firstStop) {
+      firstStop = data.stops.find((stop) => {
+        if (
+          departureStop.includes(' SC') &&
+          stop.stop_name.includes('Shopping Centre')
+        )
+          departureStop = departureStop.replace('SC', 'Shopping Centre')
+
+        return stop.stop_name.startsWith(departureStop)
+      })
     }
 
     if (!firstStop) {
@@ -206,9 +213,11 @@ const DirectionDetails = ({ directions, iconList }) => {
 
     const stopList = []
     for (let i = 1; i < numStops; i++) {
-      const stop = data.stops.find(
-        (stop) => stop.stop_sequence === firstStop.stop_sequence + i
-      )
+      const stop = data.stops.find((stop) => {
+        // console.log(stop.stop_sequence)
+        return stop.stop_sequence === firstStop.stop_sequence + i
+      })
+
       if (!stop) {
         console.log('Error finding stops information ')
         return null
@@ -399,51 +408,63 @@ const DirectionDetails = ({ directions, iconList }) => {
                         primary={step.transit.departure_stop.name}
                       />
                     </ListItem>
-                    <ListItem>
-                      <List sx={{ width: '100%' }}>
-                        <ListItemButton
-                          disableRipple
+                    {step.transit.num_stops > 1 ? (
+                      <ListItem>
+                        <List sx={{ width: '100%' }}>
+                          <ListItemButton
+                            disableRipple
+                            sx={{ borderLeft: '3px solid #ed6c02' }}
+                            onClick={(e) => handleClick(e, index)}
+                          >
+                            {/* show/hide stops */}
+                            <ListItemIcon>
+                              {stepShowStops[index] ? (
+                                <ExpandLess />
+                              ) : (
+                                <ExpandMore />
+                              )}
+                            </ListItemIcon>
+                            <ListItemText
+                              primary={`${step.transit.num_stops} stops`}
+                            />
+                            <Box>{step.duration.text}</Box>
+                          </ListItemButton>
+                          <Collapse
+                            in={stepShowStops[index]}
+                            timeout="auto"
+                            unmountOnExit
+                          >
+                            <List dense disablePadding>
+                              {stepStops[index] ? (
+                                stepStops[index]?.map((stop) => (
+                                  <ListItem
+                                    key={stop}
+                                    sx={{ borderLeft: '3px solid #ed6c02' }}
+                                  >
+                                    <ListItemText inset primary={stop} />
+                                  </ListItem>
+                                ))
+                              ) : (
+                                <ListItemText
+                                  inset
+                                  primary="Sorry, error retrieving stops information..."
+                                />
+                              )}
+                            </List>
+                          </Collapse>
+                        </List>
+                      </ListItem>
+                    ) : (
+                      <ListItem>
+                        <ListItemText
+                          inset
+                          primary="non-stop"
                           sx={{ borderLeft: '3px solid #ed6c02' }}
-                          onClick={(e) => handleClick(e, index)}
-                        >
-                          {/* show/hide stops */}
-                          <ListItemIcon>
-                            {stepShowStops[index] ? (
-                              <ExpandLess />
-                            ) : (
-                              <ExpandMore />
-                            )}
-                          </ListItemIcon>
-                          <ListItemText
-                            primary={`${step.transit.num_stops} stops`}
-                          />
-                          <Box>{step.duration.text}</Box>
-                        </ListItemButton>
-                        <Collapse
-                          in={stepShowStops[index]}
-                          timeout="auto"
-                          unmountOnExit
-                        >
-                          <List dense disablePadding>
-                            {stepStops[index] ? (
-                              stepStops[index]?.map((stop) => (
-                                <ListItem
-                                  key={stop}
-                                  sx={{ borderLeft: '3px solid #ed6c02' }}
-                                >
-                                  <ListItemText inset primary={stop} />
-                                </ListItem>
-                              ))
-                            ) : (
-                              <ListItemText
-                                inset
-                                primary="Sorry, error retrieving stops information..."
-                              />
-                            )}
-                          </List>
-                        </Collapse>
-                      </List>
-                    </ListItem>
+                        />
+                        <Box>{step.duration.text}</Box>
+                      </ListItem>
+                    )}
+
                     <ListItem disablePadding>
                       <ListItemAvatar>
                         <Avatar
@@ -487,6 +508,7 @@ const DirectionDetails = ({ directions, iconList }) => {
         </List>
         <Box width="50%" m="1em" position="relative">
           <Map
+            cityBounds={cityBounds}
             directions={directions}
             routeIndex={routeIndex}
             stepIndex={stepIndex}
