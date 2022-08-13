@@ -6,7 +6,7 @@ import { useCallback, useEffect, useState } from 'react'
 const containerStyle = {
   width: '100%',
   height: '350px',
-  borderRadius: '10px',
+  borderRadius: '5px',
 }
 
 const melbourneCenter = {
@@ -64,7 +64,7 @@ const Map = ({ cityBounds, directions, routeIndex, stepIndex, zoomIn }) => {
   }
 
   return (
-    <Box position="sticky" top="5rem">
+    <Box position="sticky" top="5rem" right="0">
       <IconButton
         onClick={centerMap}
         disableRipple

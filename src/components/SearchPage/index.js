@@ -22,6 +22,10 @@ const GOOGLE_API_KEY = process.env.REACT_APP_GOOGLE_MAPS_API_KEY
 
 const SearchPage = ({
   cityBounds,
+  origin,
+  setOrigin,
+  destination,
+  setDestination,
   directions,
   setDirections,
   modeList,
@@ -31,8 +35,8 @@ const SearchPage = ({
   // To remove a warning
   const [libraries] = useState(['places'])
 
-  const originRef = useRef()
-  const destinationRef = useRef()
+  let originRef = useRef()
+  let destinationRef = useRef()
 
   let navigate = useNavigate()
 
@@ -59,6 +63,11 @@ const SearchPage = ({
     if (originRef.current.value === '' || destinationRef.current.value === '') {
       return
     }
+
+    // console.log(origin, destination)
+
+    setOrigin(originRef.current.value)
+    setDestination(destinationRef.current.value)
 
     // eslint-disable-next-line no-undef
     const directionService = new google.maps.DirectionsService()
@@ -93,14 +102,19 @@ const SearchPage = ({
   }
 
   return (
-    <>
+    <Stack
+      direction={{ xs: 'column-reverse', sm: 'row' }}
+      spacing={2}
+      mt={3}
+      width="95%"
+    >
       <Box
         sx={{
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'flex-start',
-          width: '45%',
-          margin: '20px',
+          width: '100%',
+          // margin: '20px',
         }}
       >
         <Stack
@@ -124,6 +138,7 @@ const SearchPage = ({
                 id="start"
                 placeholder="Start"
                 aria-label="start-address"
+                defaultValue={origin}
                 ref={originRef}
               />
             </Autocomplete>
@@ -138,6 +153,7 @@ const SearchPage = ({
                 id="end"
                 placeholder="End"
                 aria-label="end-address"
+                defaultValue={destination}
                 ref={destinationRef}
               />
             </Autocomplete>
@@ -215,7 +231,7 @@ const SearchPage = ({
         </Stack>
         <Outlet />
       </Box>
-      <Box width="50%" m="20px" position="relative">
+      <Box width="100%" position="relative">
         <Map
           cityBounds={cityBounds}
           directions={directions}
@@ -224,7 +240,7 @@ const SearchPage = ({
           zoomin={null}
         />
       </Box>
-    </>
+    </Stack>
   )
 }
 

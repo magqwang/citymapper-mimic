@@ -1,9 +1,16 @@
 import { useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { ArrowForward, ExpandLess, ExpandMore } from '@mui/icons-material'
+import {
+  ArrowForward,
+  Close,
+  ExpandLess,
+  ExpandMore,
+  MapTwoTone,
+} from '@mui/icons-material'
 import {
   Avatar,
   Box,
+  Button,
   Collapse,
   Divider,
   List,
@@ -27,6 +34,7 @@ const DirectionDetails = ({ cityBounds, directions, iconList }) => {
   const routeIndex = parseInt(params.routeIndex)
   const [stepIndex, setStepIndex] = useState(null)
   const [zoomIn, setZoomIn] = useState(true)
+  const [showMap, setShowMap] = useState(true)
 
   const directionsSteps = directions.routes[routeIndex].legs[0].steps
   const [stepShowStops, setStepShowStops] = useState(
@@ -327,19 +335,14 @@ const DirectionDetails = ({ cityBounds, directions, iconList }) => {
         </Typography>
       </Stack>
       {/* Direction per step */}
-      <Box
-        sx={{
-          display: 'flex',
-          direction: 'row',
-          justifyContent: 'center',
-          width: '100%',
-        }}
+      <Stack
+        direction={{ xs: 'column-reverse', sm: 'row' }}
+        width="95%"
+        spacing={2}
       >
         <List
           sx={{
             bgcolor: 'background.paper',
-            width: '40%',
-            m: '1em',
             borderRadius: '10px',
           }}
           component="nav"
@@ -506,16 +509,35 @@ const DirectionDetails = ({ cityBounds, directions, iconList }) => {
             </ListItemButton>
           ))}
         </List>
-        <Box width="50%" m="1em" position="relative">
-          <Map
-            cityBounds={cityBounds}
-            directions={directions}
-            routeIndex={routeIndex}
-            stepIndex={stepIndex}
-            zoomIn={zoomIn}
-          />
+        <Box minWidth="50%" position="relative">
+          <Button
+            fullWidth
+            variant="contained"
+            color="success"
+            startIcon={showMap ? <Close /> : <MapTwoTone />}
+            sx={{
+              display: { xs: 'flex', sm: 'none' },
+              position: showMap && 'absolute',
+              top: showMap && '0',
+              zIndex: showMap && '1',
+              opacity: showMap && '0.5',
+              color: 'white',
+            }}
+            onClick={() => setShowMap(!showMap)}
+          >
+            {showMap ? 'Hide Map' : 'Show Map'}
+          </Button>
+          {showMap && (
+            <Map
+              cityBounds={cityBounds}
+              directions={directions}
+              routeIndex={routeIndex}
+              stepIndex={stepIndex}
+              zoomIn={zoomIn}
+            />
+          )}
         </Box>
-      </Box>
+      </Stack>
     </Stack>
   )
 }

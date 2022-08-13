@@ -36,6 +36,8 @@ const melbourneBounds = {
 
 function App() {
   const [directions, setDirections] = useState(null)
+  const [origin, setOrigin] = useState('')
+  const [destination, setDestination] = useState('')
 
   return (
     <>
@@ -64,6 +66,10 @@ function App() {
             path="/search"
             element={
               <SearchPage
+                origin={origin}
+                setOrigin={(o) => setOrigin(o)}
+                destination={destination}
+                setDestination={(d) => setDestination(d)}
                 cityBounds={melbourneBounds}
                 directions={directions}
                 setDirections={(d) => setDirections(d)}
