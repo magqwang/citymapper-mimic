@@ -234,6 +234,11 @@ const DirectionDetails = ({ cityBounds, directions, iconList }) => {
     return stopList
   }
 
+  const mql = window.matchMedia('(min-width: 600px)')
+  mql.onchange = (e) => {
+    if (e.matches) setShowMap(true)
+  }
+
   const handleClick = async (event, index) => {
     event.stopPropagation()
     if (!stepShowStops[index]) {
