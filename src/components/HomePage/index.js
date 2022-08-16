@@ -15,9 +15,7 @@ const HomePage = () => {
             color="inherit"
             aria-label="home"
             sx={{ mr: 2 }}
-            onClick={() => {
-              navigate('/')
-            }}
+            onClick={() => navigate('/')}
           >
             <Home />
           </IconButton>

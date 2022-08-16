@@ -35,9 +35,14 @@ const melbourneBounds = {
 }
 
 function App() {
-  const [directions, setDirections] = useState(null)
-  const [origin, setOrigin] = useState('')
-  const [destination, setDestination] = useState('')
+  const [directions, setDirections] = useState({
+    origin: '',
+    destination: '',
+    origPlaceId: null,
+    destPlaceId: null,
+    travelMode: 'DRIVING',
+    results: null,
+  })
 
   return (
     <>
@@ -56,7 +61,16 @@ function App() {
                   letterSpacing: '0.1rem',
                   marginTop: '15%',
                 }}
-                onClick={() => setDirections(null)}
+                onClick={() =>
+                  setDirections({
+                    origin: '',
+                    destination: '',
+                    origPlaceId: null,
+                    destPlaceId: null,
+                    travelMode: 'DRIVING',
+                    results: null,
+                  })
+                }
               >
                 Get me somewhere
               </Link>
@@ -66,13 +80,9 @@ function App() {
             path="/search"
             element={
               <SearchPage
-                origin={origin}
-                setOrigin={(o) => setOrigin(o)}
-                destination={destination}
-                setDestination={(d) => setDestination(d)}
-                cityBounds={melbourneBounds}
                 directions={directions}
                 setDirections={(d) => setDirections(d)}
+                cityBounds={melbourneBounds}
                 modeList={travelModeList}
                 iconList={iconList}
               />
@@ -81,9 +91,9 @@ function App() {
             <Route
               path="/search/:addresses"
               element={
-                directions && (
+                directions.results && (
                   <DirectionResults
-                    directions={directions}
+                    results={directions.results}
                     iconList={iconList}
                   />
                 )
@@ -93,10 +103,10 @@ function App() {
           <Route
             path="/route/:routeIndex"
             element={
-              directions && (
+              directions.results && (
                 <DirectionDetails
                   cityBounds={melbourneBounds}
-                  directions={directions}
+                  results={directions.results}
                   iconList={iconList}
                 />
               )

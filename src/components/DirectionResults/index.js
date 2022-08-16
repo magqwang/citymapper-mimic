@@ -1,9 +1,9 @@
 import { Box, Button, ButtonGroup, Typography } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 
-const DirectionResults = ({ directions, iconList }) => {
+const DirectionResults = ({ results, iconList }) => {
   const navigate = useNavigate()
-  const travelMode = directions.request.travelMode
+  const travelMode = results.request.travelMode
 
   return (
     <>
@@ -12,7 +12,7 @@ const DirectionResults = ({ directions, iconList }) => {
           orientation="vertical"
           sx={{ bgcolor: 'white', mt: '20px' }}
         >
-          {directions.routes.map((route, index) => (
+          {results.routes.map((route, index) => (
             <Button
               key={
                 route.legs[0].distance.value +
@@ -49,7 +49,7 @@ const DirectionResults = ({ directions, iconList }) => {
           orientation="vertical"
           sx={{ bgcolor: 'white', mt: '20px' }}
         >
-          {directions.routes.map((route, index) => (
+          {results.routes.map((route, index) => (
             <Button
               key={
                 route.legs[0].distance.value +

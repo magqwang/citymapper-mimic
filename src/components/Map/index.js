@@ -25,7 +25,7 @@ const noPoi = [
   },
 ]
 
-const Map = ({ cityBounds, directions, routeIndex, stepIndex, zoomIn }) => {
+const Map = ({ cityBounds, results, routeIndex, stepIndex, zoomIn }) => {
   const [map, setMap] = useState(null)
 
   const onLoad = useCallback((map) => {
@@ -40,10 +40,10 @@ const Map = ({ cityBounds, directions, routeIndex, stepIndex, zoomIn }) => {
   }, [])
 
   useEffect(() => {
-    if (map && directions && routeIndex !== null && stepIndex !== null) {
+    if (map && results && routeIndex !== null && stepIndex !== null) {
       if (zoomIn) {
         const latLngs =
-          directions.routes[routeIndex].legs[0].steps[stepIndex].lat_lngs
+          results.routes[routeIndex].legs[0].steps[stepIndex].lat_lngs
         // eslint-disable-next-line no-undef
         const newBounds = new google.maps.LatLngBounds()
         latLngs.forEach((latLng) => {
@@ -52,12 +52,12 @@ const Map = ({ cityBounds, directions, routeIndex, stepIndex, zoomIn }) => {
         map.fitBounds(newBounds)
         map.panToBounds(newBounds)
       } else {
-        const routeBounds = directions.routes[routeIndex].bounds
+        const routeBounds = results.routes[routeIndex].bounds
         map.fitBounds(routeBounds)
         map.panToBounds(routeBounds)
       }
     }
-  }, [directions, routeIndex, stepIndex, zoomIn, map])
+  }, [results, routeIndex, stepIndex, zoomIn, map])
 
   const centerMap = () => {
     map.panTo(melbourneCenter)
@@ -99,9 +99,9 @@ const Map = ({ cityBounds, directions, routeIndex, stepIndex, zoomIn }) => {
         }}
       >
         <Marker position={melbourneCenter} title={'Melbourne'} />
-        {directions && (
+        {results && (
           <DirectionsRenderer
-            directions={directions}
+            directions={results}
             routeIndex={routeIndex ? routeIndex : 0}
             options={{ markerOptions: { title: 'Start/End Marker' } }}
           />
