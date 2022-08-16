@@ -6,8 +6,8 @@ import DirectionResults from '.'
 test('shows result when given directions', () => {
   const mockDirections = {
     request: {
-      origin: { query: 'mock origin' },
-      destination: { query: 'mock destination' },
+      origin: { placeId: 'mock origPlaceId' },
+      destination: { placeId: 'mock destPlaceId' },
       travelMode: 'DRIVING',
     },
     routes: [
@@ -36,7 +36,7 @@ test('shows result when given directions', () => {
 
   render(
     <BrowserRouter>
-      <DirectionResults directions={mockDirections} iconList={mockIconList} />
+      <DirectionResults results={mockDirections} iconList={mockIconList} />
     </BrowserRouter>
   )
   const btnElement = screen.getByTestId('direction-result')
