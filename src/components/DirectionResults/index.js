@@ -1,9 +1,15 @@
 import { Box, Button, ButtonGroup, Typography } from '@mui/material'
+import { useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { DirectionsContext } from '../../contexts/directions.context'
+import { IconList } from '../../constants/iconlist.constant'
 
-const DirectionResults = ({ results, iconList }) => {
+const DirectionResults = () => {
   const navigate = useNavigate()
-  const travelMode = results.request.travelMode
+
+  const { directions } = useContext(DirectionsContext)
+
+  const travelMode = directions.results.request.travelMode
 
   return (
     <>
@@ -12,14 +18,14 @@ const DirectionResults = ({ results, iconList }) => {
           orientation="vertical"
           sx={{ bgcolor: 'white', mt: '20px' }}
         >
-          {results.routes.map((route, index) => (
+          {directions.results.routes.map((route, index) => (
             <Button
               key={
                 route.legs[0].distance.value +
                 route.legs[0].duration.value +
                 Math.floor(Math.random() * 10000)
               }
-              startIcon={iconList[travelMode]}
+              startIcon={IconList[travelMode]}
               disableRipple
               sx={{
                 color: 'gray',
@@ -49,7 +55,7 @@ const DirectionResults = ({ results, iconList }) => {
           orientation="vertical"
           sx={{ bgcolor: 'white', mt: '20px' }}
         >
-          {results.routes.map((route, index) => (
+          {directions.results.routes.map((route, index) => (
             <Button
               key={
                 route.legs[0].distance.value +
@@ -83,7 +89,7 @@ const DirectionResults = ({ results, iconList }) => {
                           mx: '5px',
                         }}
                       >
-                        {iconList[step.transit.line.vehicle.name]}
+                        {IconList[step.transit.line.vehicle.name]}
                         <span>{step.transit.line.short_name}</span>
                       </Box>
                       {i < route.legs[0].steps.length - 1 && <span>·</span>}
@@ -96,7 +102,7 @@ const DirectionResults = ({ results, iconList }) => {
                       display="flex"
                       alignItems="center"
                     >
-                      {iconList[step.travel_mode]}
+                      {IconList[step.travel_mode]}
                       {i < route.legs[0].steps.length - 1 && <span>·</span>}
                     </Box>
                   )

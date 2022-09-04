@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useContext, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import {
   ArrowForward,
@@ -22,18 +22,23 @@ import {
   Stack,
   Typography,
 } from '@mui/material'
-import Map from '../Map'
 import { visuallyHidden } from '@mui/utils'
-import usePTV from '../../hooks/usePTV'
 
-const DirectionDetails = ({ cityBounds, results, iconList }) => {
+import usePTV from '../../hooks/usePTV'
+import Map from '../Map'
+import { DirectionsContext } from '../../contexts/directions.context'
+import { IconList } from '../constants/iconlist.constant'
+
+const DirectionDetails = () => {
   const params = useParams()
   const routeIndex = parseInt(params.routeIndex)
   const [stepIndex, setStepIndex] = useState(null)
   const [zoomIn, setZoomIn] = useState(true)
   const [showMap, setShowMap] = useState(true)
 
-  const directionsSteps = results.routes[routeIndex].legs[0].steps
+  const { directions } = useContext(DirectionsContext)
+
+  const directionsSteps = directions.results.routes[routeIndex].legs[0].steps
   const [stepShowStops, setStepShowStops] = useState(
     directionsSteps.map(() => false)
   )
@@ -41,10 +46,11 @@ const DirectionDetails = ({ cityBounds, results, iconList }) => {
 
   const [getStops] = usePTV()
 
-  const startAddress = results.routes[routeIndex].legs[0].start_address
-  const endAddress = results.routes[routeIndex].legs[0].end_address
-  const duration = results.routes[routeIndex].legs[0].duration.text
-  const travelMode = results.request.travelMode
+  const startAddress =
+    directions.results.routes[routeIndex].legs[0].start_address
+  const endAddress = directions.results.routes[routeIndex].legs[0].end_address
+  const duration = directions.results.routes[routeIndex].legs[0].duration.text
+  const travelMode = directions.results.request.travelMode
 
   const prevIndex = useRef()
   const handleZoom = (index) => {
@@ -120,7 +126,7 @@ const DirectionDetails = ({ cityBounds, results, iconList }) => {
                           mx: '5px',
                         }}
                       >
-                        {iconList[step.transit.line.vehicle.name]}
+                        {IconList[step.transit.line.vehicle.name]}
                         <Box component="span" sx={visuallyHidden}>
                           {step.transit.line.vehicle.name}
                         </Box>
@@ -137,7 +143,7 @@ const DirectionDetails = ({ cityBounds, results, iconList }) => {
                       display="flex"
                       alignItems="center"
                     >
-                      {iconList[step.travel_mode]}
+                      {IconList[step.travel_mode]}
                       <Box component="span" sx={visuallyHidden}>
                         {step.travel_mode}
                       </Box>
@@ -149,7 +155,7 @@ const DirectionDetails = ({ cityBounds, results, iconList }) => {
             </>
           ) : (
             <>
-              {iconList[travelMode]}
+              {IconList[travelMode]}
               <Box component="span" sx={visuallyHidden}>
                 {travelMode}
               </Box>
@@ -197,7 +203,7 @@ const DirectionDetails = ({ cityBounds, results, iconList }) => {
                 <Stack width="100%">
                   <Stack direction="row" alignItems="center">
                     <ListItemIcon>
-                      {iconList[step.transit.line.vehicle.name]}
+                      {IconList[step.transit.line.vehicle.name]}
                       <Box component="span" sx={visuallyHidden}>
                         {step.transit.line.vehicle.name}
                       </Box>
@@ -230,7 +236,7 @@ const DirectionDetails = ({ cityBounds, results, iconList }) => {
                             height: '30px',
                           }}
                         >
-                          {iconList[step.transit.line.vehicle.name]}
+                          {IconList[step.transit.line.vehicle.name]}
                         </Avatar>
                       </ListItemAvatar>
                       <ListItemText
@@ -304,7 +310,7 @@ const DirectionDetails = ({ cityBounds, results, iconList }) => {
                             height: '30px',
                           }}
                         >
-                          {iconList[step.transit.line.vehicle.name]}
+                          {IconList[step.transit.line.vehicle.name]}
                         </Avatar>
                       </ListItemAvatar>
                       <ListItemText primary={step.transit.arrival_stop.name} />
@@ -314,7 +320,7 @@ const DirectionDetails = ({ cityBounds, results, iconList }) => {
               ) : (
                 // Step summary of non-TRANSIT mode
                 <>
-                  {iconList[step.travel_mode]}
+                  {IconList[step.travel_mode]}
                   <Box component="span" sx={visuallyHidden}>
                     {step.travel_mode}
                   </Box>
@@ -355,8 +361,6 @@ const DirectionDetails = ({ cityBounds, results, iconList }) => {
           </Button>
           {showMap && (
             <Map
-              cityBounds={cityBounds}
-              results={results}
               routeIndex={routeIndex}
               stepIndex={stepIndex}
               zoomIn={zoomIn}

@@ -2,7 +2,7 @@ import { Outlet, useNavigate } from 'react-router-dom'
 import { AppBar, IconButton, Stack, Toolbar, Typography } from '@mui/material'
 import { Home } from '@mui/icons-material'
 
-const HomePage = () => {
+const Navigation = () => {
   let navigate = useNavigate()
 
   return (
@@ -39,4 +39,4 @@ const HomePage = () => {
   )
 }
 
-export default HomePage
+export default Navigation

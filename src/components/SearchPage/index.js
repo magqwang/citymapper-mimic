@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { Outlet, useNavigate } from 'react-router-dom'
 import { Autocomplete, useJsApiLoader } from '@react-google-maps/api'
 import {
@@ -15,17 +15,16 @@ import { Clear } from '@mui/icons-material'
 import { grey } from '@mui/material/colors'
 import { visuallyHidden } from '@mui/utils'
 import Map from '../Map'
+import { DirectionsContext } from '../../contexts/directions.context'
+import { MelbourneBounds } from '../../constants/map.constant'
+import { ModeList, IconList } from '../../constants/iconlist.constant'
+
 import './index.css'
 
 const GOOGLE_API_KEY = process.env.REACT_APP_GOOGLE_MAPS_API_KEY
 
-const SearchPage = ({
-  directions,
-  setDirections,
-  cityBounds,
-  modeList,
-  iconList,
-}) => {
+const SearchPage = () => {
+  const { directions, setDirections } = useContext(DirectionsContext)
   // To remove a warning
   const [libraries] = useState(['places'])
   const [origAutoComplete, setOrigAutoComplete] = useState(null)
@@ -69,7 +68,6 @@ const SearchPage = ({
 
   useEffect(() => {
     if (isLoaded && !directions.results) {
-      // console.log(directions)
       calculateRoute()
     }
   }, [calculateRoute, isLoaded, directions])
@@ -168,7 +166,7 @@ const SearchPage = ({
                 Start address
               </InputLabel>
               <Autocomplete
-                bounds={cityBounds}
+                bounds={MelbourneBounds}
                 fields={['place_id']}
                 onLoad={(autoComplete) => {
                   // console.log('orig', autoComplete)
@@ -210,7 +208,7 @@ const SearchPage = ({
                 End address
               </InputLabel>
               <Autocomplete
-                bounds={cityBounds}
+                bounds={MelbourneBounds}
                 fields={['place_id']}
                 onLoad={(autoComplete) => {
                   // console.log('dest', autoComplete)
@@ -258,7 +256,7 @@ const SearchPage = ({
               value={directions.travelMode}
               onChange={handleTravelMode}
             >
-              {modeList.map((mode) => (
+              {ModeList.map((mode) => (
                 <Sheet
                   key={mode}
                   sx={{
@@ -290,7 +288,7 @@ const SearchPage = ({
                     overlay
                     disableIcon
                     value={mode}
-                    label={iconList[mode]}
+                    label={IconList[mode]}
                     name={mode}
                     componentsProps={{ input: { 'aria-label': { mode } } }}
                   />
@@ -302,13 +300,7 @@ const SearchPage = ({
         <Outlet />
       </Box>
       <Box width="100%" position="relative">
-        <Map
-          cityBounds={cityBounds}
-          results={directions.results}
-          routeIndex={null}
-          stepIndex={null}
-          zoomin={null}
-        />
+        <Map routeIndex={null} stepIndex={null} zoomin={null} />
       </Box>
     </Stack>
   )
