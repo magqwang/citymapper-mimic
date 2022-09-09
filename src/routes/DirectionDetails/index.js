@@ -14,6 +14,7 @@ const DirectionDetails = () => {
   const [zoomIn, setZoomIn] = useState(true)
 
   const prevIndex = useRef()
+
   const handleZoom = (index) => {
     prevIndex.value = stepIndex
     setStepIndex(index)
