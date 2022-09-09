@@ -1,6 +1,8 @@
 import { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { Outlet, useNavigate } from 'react-router-dom'
+
 import { Autocomplete, useJsApiLoader } from '@react-google-maps/api'
+
 import {
   Box,
   FormControl,
@@ -14,7 +16,8 @@ import { Radio, RadioGroup, Sheet, radioClasses } from '@mui/joy'
 import { Clear } from '@mui/icons-material'
 import { grey } from '@mui/material/colors'
 import { visuallyHidden } from '@mui/utils'
-import Map from '../Map'
+
+import Map from '../../components/Map'
 import { DirectionsContext } from '../../contexts/directions.context'
 import { MelbourneBounds } from '../../constants/map.constant'
 import { ModeList, IconList } from '../../constants/iconlist.constant'
@@ -58,7 +61,6 @@ const SearchPage = () => {
     })
 
     if (results.status === 'OK') {
-      // console.log(results)
       setDirections({ ...directions, results: results })
       navigate(
         `/search/origin=${directions.origPlaceId}&desitination=${directions.destPlaceId}&travelmode=${directions.travelMode}`
@@ -74,18 +76,14 @@ const SearchPage = () => {
 
   const handleTravelMode = (event) => {
     const travelMode = event.target.value
-    // console.log('handleTravelMode:', travelMode)
     setDirections({ ...directions, travelMode: travelMode, results: null })
   }
 
   const handlePlaceChanged = (autoComplete, mode) => {
     const place = autoComplete.getPlace()
-    if (!place.place_id)
-      // window.alert('Please select an option from the dropdown list.')
-      return
+    if (!place.place_id) return
 
     if (mode === 'ORIG') {
-      // console.log('ORIG', place.place_id)
       setDirections({
         ...directions,
         origPlaceId: place.place_id,
@@ -93,7 +91,6 @@ const SearchPage = () => {
         results: null,
       })
     } else {
-      // console.log('DEST', place.place_id)
       setDirections({
         ...directions,
         destPlaceId: place.place_id,
@@ -154,7 +151,6 @@ const SearchPage = () => {
         <Stack
           spacing={2}
           sx={{
-            // width: '100%',
             backgroundColor: 'white',
             padding: '20px',
             borderRadius: '10px',
@@ -169,7 +165,6 @@ const SearchPage = () => {
                 bounds={MelbourneBounds}
                 fields={['place_id']}
                 onLoad={(autoComplete) => {
-                  // console.log('orig', autoComplete)
                   setOrigAutoComplete(autoComplete)
                 }}
                 onPlaceChanged={() =>
@@ -211,7 +206,6 @@ const SearchPage = () => {
                 bounds={MelbourneBounds}
                 fields={['place_id']}
                 onLoad={(autoComplete) => {
-                  // console.log('dest', autoComplete)
                   setDestAutoComplete(autoComplete)
                 }}
                 onPlaceChanged={() =>

@@ -5,7 +5,7 @@ import { CssBaseline } from '@mui/material'
 
 import { DirectionsProvider } from './contexts/directions.context'
 
-import App from './components/App'
+import App from './routes/App'
 
 import './index.css'
 
