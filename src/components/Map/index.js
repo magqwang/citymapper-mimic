@@ -1,36 +1,23 @@
 import { Adjust } from '@mui/icons-material'
 import { Box, IconButton } from '@mui/material'
 import { DirectionsRenderer, GoogleMap, Marker } from '@react-google-maps/api'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useContext, useEffect, useState } from 'react'
+import { DirectionsContext } from '../../contexts/directions.context'
+import {
+  ContainerStyle,
+  MelbourneCenter,
+  MelbourneBounds,
+  NoPoi,
+} from '../../constants/map.constant'
 
-const containerStyle = {
-  width: '100%',
-  height: '350px',
-  borderRadius: '5px',
-}
-
-const melbourneCenter = {
-  lat: -37.8136,
-  lng: 144.9631,
-}
-
-const noPoi = [
-  {
-    featureType: 'poi',
-    stylers: [{ visibility: 'off' }],
-  },
-  {
-    featureType: 'poi.park',
-    stylers: [{ visibility: 'on' }],
-  },
-]
-
-const Map = ({ cityBounds, results, routeIndex, stepIndex, zoomIn }) => {
+const Map = ({ routeIndex, stepIndex, zoomIn }) => {
   const [map, setMap] = useState(null)
+
+  const { directions } = useContext(DirectionsContext)
 
   const onLoad = useCallback((map) => {
     // eslint-disable-next-line no-undef
-    const center = new google.maps.LatLng(melbourneCenter)
+    const center = new google.maps.LatLng(MelbourneCenter)
     map.setCenter(center)
     setMap(map)
   }, [])
@@ -40,10 +27,16 @@ const Map = ({ cityBounds, results, routeIndex, stepIndex, zoomIn }) => {
   }, [])
 
   useEffect(() => {
-    if (map && results && routeIndex !== null && stepIndex !== null) {
+    if (
+      map &&
+      directions.results &&
+      routeIndex !== null &&
+      stepIndex !== null
+    ) {
       if (zoomIn) {
         const latLngs =
-          results.routes[routeIndex].legs[0].steps[stepIndex].lat_lngs
+          directions.results.routes[routeIndex].legs[0].steps[stepIndex]
+            .lat_lngs
         // eslint-disable-next-line no-undef
         const newBounds = new google.maps.LatLngBounds()
         latLngs.forEach((latLng) => {
@@ -52,15 +45,15 @@ const Map = ({ cityBounds, results, routeIndex, stepIndex, zoomIn }) => {
         map.fitBounds(newBounds)
         map.panToBounds(newBounds)
       } else {
-        const routeBounds = results.routes[routeIndex].bounds
+        const routeBounds = directions.results.routes[routeIndex].bounds
         map.fitBounds(routeBounds)
         map.panToBounds(routeBounds)
       }
     }
-  }, [results, routeIndex, stepIndex, zoomIn, map])
+  }, [directions.results, routeIndex, stepIndex, zoomIn, map])
 
   const centerMap = () => {
-    map.panTo(melbourneCenter)
+    map.panTo(MelbourneCenter)
   }
 
   return (
@@ -81,8 +74,8 @@ const Map = ({ cityBounds, results, routeIndex, stepIndex, zoomIn }) => {
         <Adjust />
       </IconButton>
       <GoogleMap
-        mapContainerStyle={containerStyle}
-        center={melbourneCenter}
+        mapContainerStyle={ContainerStyle}
+        center={MelbourneCenter}
         zoom={10}
         onLoad={onLoad}
         onUnmount={onUnmount}
@@ -91,17 +84,17 @@ const Map = ({ cityBounds, results, routeIndex, stepIndex, zoomIn }) => {
           streetViewControl: false,
           mapTypeControl: false,
           fullscreenControl: false,
-          styles: noPoi,
+          styles: NoPoi,
           restriction: {
-            latLngBounds: cityBounds,
+            latLngBounds: MelbourneBounds,
             strictBounds: true,
           },
         }}
       >
-        <Marker position={melbourneCenter} title={'Melbourne'} />
-        {results && (
+        <Marker position={MelbourneCenter} title={'Melbourne'} />
+        {directions.results && (
           <DirectionsRenderer
-            directions={results}
+            directions={directions.results}
             routeIndex={routeIndex ? routeIndex : 0}
             options={{ markerOptions: { title: 'Start/End Marker' } }}
           />

@@ -1,6 +1,5 @@
 import { render, screen } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
-import { useJsApiLoader } from '@react-google-maps/api'
 
 import SearchPage from '.'
 

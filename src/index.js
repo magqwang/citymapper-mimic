@@ -1,14 +1,20 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
-import './index.css'
-import App from './components/App'
 import { CssBaseline } from '@mui/material'
+
+import { DirectionsProvider } from './contexts/directions.context'
+
+import App from './routes/App'
+
+import './index.css'
 
 const root = ReactDOM.createRoot(document.getElementById('root'))
 root.render(
   <BrowserRouter>
     <CssBaseline />
-    <App />
+    <DirectionsProvider>
+      <App />
+    </DirectionsProvider>
   </BrowserRouter>
 )
