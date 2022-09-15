@@ -1,4 +1,5 @@
 import { useContext } from 'react'
+import PropTypes from 'prop-types'
 
 import { ArrowForward } from '@mui/icons-material'
 import { Stack, Typography } from '@mui/material'
@@ -23,6 +24,10 @@ const OriginDestination = ({ routeIndex }) => {
       </Typography>
     </Stack>
   )
+}
+
+OriginDestination.propTypes = {
+  routeIndex: PropTypes.number.isRequired,
 }
 
 export default OriginDestination
