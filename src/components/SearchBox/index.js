@@ -1,4 +1,6 @@
 import { useContext, useRef, useState } from 'react'
+import PropTypes from 'prop-types'
+
 import { DirectionsContext } from '../../contexts/directions.context'
 import { Clear } from '@mui/icons-material'
 import { IconButton, InputLabel, Stack } from '@mui/material'
@@ -98,6 +100,10 @@ const SearchBox = ({ mode }) => {
       </IconButton>
     </Stack>
   )
+}
+
+SearchBox.propTypes = {
+  mode: PropTypes.string.isRequired,
 }
 
 export default SearchBox

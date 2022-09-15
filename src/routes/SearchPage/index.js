@@ -101,7 +101,7 @@ const SearchPage = () => {
         <Outlet />
       </Box>
       <Box width="100%" position="relative">
-        <Map routeIndex={null} stepIndex={null} zoomin={null} />
+        <Map />
       </Box>
     </Stack>
   )

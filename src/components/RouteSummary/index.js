@@ -1,6 +1,8 @@
 import { useContext } from 'react'
 import { DirectionsContext } from '../../contexts/directions.context'
 
+import PropTypes from 'prop-types'
+
 import { Box, Stack, Typography } from '@mui/material'
 
 import { IconList } from '../../constants/iconlist.constant'
@@ -84,6 +86,10 @@ const RouteSummary = ({ routeIndex }) => {
       </Typography>
     </Stack>
   )
+}
+
+RouteSummary.propTypes = {
+  routeIndex: PropTypes.number.isRequired,
 }
 
 export default RouteSummary

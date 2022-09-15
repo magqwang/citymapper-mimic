@@ -1,7 +1,10 @@
+import { useCallback, useContext, useEffect, useState } from 'react'
 import { Adjust } from '@mui/icons-material'
 import { Box, IconButton } from '@mui/material'
 import { DirectionsRenderer, GoogleMap, Marker } from '@react-google-maps/api'
-import { useCallback, useContext, useEffect, useState } from 'react'
+
+import PropTypes from 'prop-types'
+
 import { DirectionsContext } from '../../contexts/directions.context'
 import {
   ContainerStyle,
@@ -102,6 +105,18 @@ const Map = ({ routeIndex, stepIndex, zoomIn }) => {
       </GoogleMap>
     </Box>
   )
+}
+
+Map.propTypes = {
+  routeIndex: PropTypes.number,
+  stepIndex: PropTypes.number,
+  zoomIn: PropTypes.bool,
+}
+
+Map.defaultProps = {
+  routeIndex: null,
+  stepIndex: null,
+  zoomIn: false,
 }
 
 export default Map

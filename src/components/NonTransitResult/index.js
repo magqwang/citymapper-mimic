@@ -1,5 +1,7 @@
 import { useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
+import PropTypes from 'prop-types'
+
 import { DirectionsContext } from '../../contexts/directions.context'
 
 import { Button, ButtonGroup, Typography } from '@mui/material'
@@ -45,6 +47,10 @@ const NonTransitResult = ({ travelMode }) => {
       ))}
     </ButtonGroup>
   )
+}
+
+NonTransitResult.propTypes = {
+  travelMode: PropTypes.string.isRequired,
 }
 
 export default NonTransitResult

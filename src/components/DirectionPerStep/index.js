@@ -1,6 +1,8 @@
 import { useContext, useState } from 'react'
 import { DirectionsContext } from '../../contexts/directions.context'
 
+import PropTypes from 'prop-types'
+
 import {
   Avatar,
   Box,
@@ -21,7 +23,7 @@ import { ExpandLess, ExpandMore } from '@mui/icons-material'
 import { IconList } from '../../constants/iconlist.constant'
 import usePTV from '../../hooks/usePTV'
 
-const DirectionsPerStep = ({ routeIndex, handleZoom }) => {
+const DirectionPerStep = ({ routeIndex, handleZoom }) => {
   const { directions } = useContext(DirectionsContext)
   const directionsSteps = directions.results.routes[routeIndex].legs[0].steps
   const [stepShowStops, setStepShowStops] = useState(
@@ -219,4 +221,9 @@ const DirectionsPerStep = ({ routeIndex, handleZoom }) => {
   )
 }
 
-export default DirectionsPerStep
+DirectionPerStep.propTypes = {
+  routeIndex: PropTypes.number.isRequired,
+  handleZoom: PropTypes.func.isRequired,
+}
+
+export default DirectionPerStep
