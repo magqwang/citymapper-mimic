@@ -1,5 +1,10 @@
 import { useContext } from 'react'
-import { Routes, Route } from 'react-router-dom'
+import {
+  Route,
+  createBrowserRouter,
+  createRoutesFromElements,
+  RouterProvider,
+} from 'react-router-dom'
 
 import Navigation from '../Navigation'
 import Home from '../Home'
@@ -12,27 +17,28 @@ import { DirectionsContext } from '../../contexts/directions.context'
 
 function App() {
   const { directions } = useContext(DirectionsContext)
+  console.log(directions)
 
-  return (
-    <>
-      <Routes>
-        <Route path="/" element={<Navigation />}>
-          <Route path="*" element={<NotFound />} />
-          <Route index element={<Home />} />
-          <Route path="/search" element={<SearchPage />}>
-            <Route
-              path="/search/:addresses"
-              element={directions.results && <DirectionResults />}
-            />
-          </Route>
+  const router = createBrowserRouter(
+    createRoutesFromElements(
+      <Route path="/" element={<Navigation />}>
+        <Route path="*" element={<NotFound />} />
+        <Route index element={<Home />} />
+        <Route path="/search" element={<SearchPage />}>
           <Route
-            path="/route/:routeIndex"
-            element={directions.results && <DirectionDetails />}
+            path="/search/:addresses"
+            element={directions.results && <DirectionResults />}
           />
         </Route>
-      </Routes>
-    </>
+        <Route
+          path="/route/:routeIndex"
+          element={directions.results && <DirectionDetails />}
+        />
+      </Route>
+    )
   )
+
+  return <RouterProvider router={router} />
 }
 
 export default App
