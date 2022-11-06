@@ -5,6 +5,17 @@ import { DirectionsContext } from '../../contexts/directions.context'
 const Home = () => {
   const { setDirections } = useContext(DirectionsContext)
 
+  const clearDirections = () => {
+    setDirections({
+      origin: '',
+      destination: '',
+      origPlaceId: null,
+      destPlaceId: null,
+      travelMode: 'DRIVING',
+      results: null,
+    })
+  }
+
   return (
     <Link
       to="/search"
@@ -15,16 +26,7 @@ const Home = () => {
         letterSpacing: '0.1rem',
         marginTop: '15%',
       }}
-      onClick={() =>
-        setDirections({
-          origin: '',
-          destination: '',
-          origPlaceId: null,
-          destPlaceId: null,
-          travelMode: 'DRIVING',
-          results: null,
-        })
-      }
+      onClick={clearDirections}
     >
       Get me somewhere
     </Link>

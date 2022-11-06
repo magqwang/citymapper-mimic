@@ -17,7 +17,6 @@ import { DirectionsContext } from '../../contexts/directions.context'
 
 function App() {
   const { directions } = useContext(DirectionsContext)
-  console.log(directions)
 
   const router = createBrowserRouter(
     createRoutesFromElements(

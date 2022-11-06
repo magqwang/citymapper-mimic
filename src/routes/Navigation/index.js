@@ -1,5 +1,5 @@
 import { Outlet, useNavigate } from 'react-router-dom'
-import { AppBar, IconButton, Stack, Toolbar, Typography } from '@mui/material'
+import { AppBar, Box, IconButton, Toolbar, Typography } from '@mui/material'
 import { Home } from '@mui/icons-material'
 
 const Navigation = () => {
@@ -24,17 +24,15 @@ const Navigation = () => {
           </Typography>
         </Toolbar>
       </AppBar>
-      <Stack
+      <Box
         sx={{
-          width: '100%',
-          flexDirection: 'row',
           display: 'flex',
           justifyContent: 'center',
           bgcolor: 'rgb(55, 171, 46)',
         }}
       >
         <Outlet />
-      </Stack>
+      </Box>
     </main>
   )
 }
